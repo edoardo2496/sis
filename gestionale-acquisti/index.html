@@ -265,7 +265,7 @@ async function salvaOrdine(){
   const btn=document.getElementById('btn-salva');
   btn.textContent='Salvataggio...';btn.disabled=true;
   try{
-    await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fields)});
+    await fetch(URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(fields)});
     showToast('Ordine salvato');
     ['fornitore','materiale','quantita','prezzo_unitario','totale_preview','note'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('cantiere').value='';
