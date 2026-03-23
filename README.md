@@ -46,7 +46,7 @@ Web app per la registrazione degli ordini di acquisto nei cantieri.
 ---
 
 ### 🕐 Rendicontazione Ore Cantiere
-Web app mobile-first per la registrazione strutturata delle ore di manodopera nei cantieri, sviluppata per consentire ai capocantiere di rendicontare in modo preciso le ore ordinarie e straordinarie lavorate. I dati raccolti alimentano il processo di **costing industriale** delle opere edili, contribuendo alla costruzione del conto economico per cantiere.
+Web app mobile-first per la registrazione strutturata delle ore di manodopera nei cantieri, sviluppata per consentire al capocantiere di rendicontare in modo preciso le ore ordinarie e straordinarie lavorate. I dati raccolti alimentano il processo di **costing industriale** delle opere edili, contribuendo alla costruzione del conto economico per cantiere.
 
 **Funzionalità:**
 - Registrazione ore ordinarie e straordinarie per cantiere
