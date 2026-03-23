@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Edilcrema — Gestionale Acquisti</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+.header{background:#1a1a1a;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.header-title{color:#fff;font-size:17px;font-weight:500}
+.header-sub{color:#888;font-size:12px;margin-top:1px}
+.app{max-width:520px;margin:0 auto;padding:1rem}
+.tab-bar{display:flex;gap:8px;margin-bottom:1.5rem}
+.tab{flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:13px;color:#666;cursor:pointer;font-family:inherit}
+.tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-weight:500}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:12px}
+label{font-size:13px;color:#666;display:block;margin-bottom:6px;margin-top:14px}
+label:first-child{margin-top:0}
+select,input[type=date],input[type=number],input[type=text],textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fff;color:#1a1a1a;font-family:inherit;-webkit-appearance:none}
+select:focus,input:focus,textarea:focus{outline:none;border-color:#1a1a1a}
+textarea{resize:vertical;min-height:70px;line-height:1.5}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{width:100%;padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:16px;font-family:inherit;transition:all .15s}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.btn-primary:active{opacity:.8;transform:scale(.98)}
+.btn-secondary{background:#fff;color:#1a1a1a}
+
+.metric-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+.metric{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem}
+.metric-label{font-size:12px;color:#888;margin-bottom:4px}
+.metric-value{font-size:26px;font-weight:500;color:#1a1a1a}
+.metric-sub{font-size:12px;color:#aaa;margin-top:4px}
+
+.bar-list{margin-top:12px}
+.bar-item{margin-bottom:10px}
+.bar-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.bar-name{color:#1a1a1a;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.bar-val{color:#666;font-size:12px}
+.bar-track{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:#1a1a1a;transition:width .6s ease}
+
+.loading{text-align:center;padding:2rem;color:#aaa;font-size:14px}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:14px}
+.error-msg{background:#fff5f5;border:1px solid #fcc;border-radius:8px;padding:10px 14px;font-size:13px;color:#c00;margin-bottom:12px;display:none}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+
+.section-title{font-size:15px;font-weight:500;margin-bottom:12px;color:#1a1a1a}
+.divider{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
+
+.stato-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;margin-left:6px}
+.stato-Inviato{background:#e8f4ff;color:#1560a0}
+.stato-Confermato{background:#e8fff0;color:#1a6b40}
+.stato-Ricevuto{background:#f0e8ff;color:#5a1ab0}
+.stato-Fatturato{background:#fff5e0;color:#8a5a00}
+.stato-Preventivo{background:#f0f0f0;color:#555}
+
+.refresh-btn{float:right;background:none;border:none;cursor:pointer;font-size:13px;color:#888;padding:0;font-family:inherit}
+.refresh-btn:hover{color:#1a1a1a}
+
+@media(prefers-color-scheme:dark){
+  body{background:#111;color:#eee}
+  .header{background:#000}
+  .card,.metric{background:#1e1e1e;border-color:#333}
+  .tab{background:#1e1e1e;border-color:#333;color:#aaa}
+  .tab.active{background:#eee;color:#111;border-color:#eee}
+  select,input,textarea{background:#1e1e1e;color:#eee;border-color:#333}
+  select:focus,input:focus,textarea:focus{border-color:#eee}
+  .btn-secondary{background:#1e1e1e;color:#eee;border-color:#333}
+  .btn-primary{background:#eee;color:#111;border-color:#eee}
+  .metric-value{color:#eee}
+  .bar-name{color:#eee}
+  .bar-track{background:#333}
+  .bar-fill{background:#eee}
+  .divider{border-color:#333}
+  .error-msg{background:#2a0000;border-color:#800;color:#f88}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">Gestionale Acquisti</div>
+    <div class="header-sub">Edilcrema snc</div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('ordine')">Nuovo ordine</button>
+    <button class="tab" onclick="switchTab('dashboard')">Dashboard</button>
+  </div>
+
+  <div id="tab-ordine" class="section active">
+    <div class="card">
+      <div id="error-msg" class="error-msg"></div>
+
+      <label>Data ordine</label>
+      <input type="date" id="data_ordine" required>
+
+      <label>Fornitore</label>
+      <input type="text" id="fornitore" list="lista_fornitori" placeholder="Digita per cercare..." autocomplete="off">
+      <datalist id="lista_fornitori"></datalist>
+
+      <label>Cantiere</label>
+      <select id="cantiere">
+        <option value="">— seleziona —</option>
+      </select>
+
+      <label>Materiale</label>
+      <input type="text" id="materiale" placeholder="es. Ferro, Calcestruzzo...">
+
+      <div class="row">
+        <div>
+          <label>Quantità</label>
+          <input type="number" id="quantita" step="0.01" placeholder="0">
+        </div>
+        <div>
+          <label>Unità di misura</label>
+          <select id="unita">
+            <option>kg</option>
+            <option>mc</option>
+            <option>mq</option>
+            <option>pz</option>
+            <option>ore</option>
+            <option>t</option>
+            <option>ml</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Prezzo unitario (€)</label>
+      <input type="number" id="prezzo_unitario" step="0.001" placeholder="0.00">
+
+      <label>Totale ordine (€)</label>
+      <input type="number" id="totale_preview" readonly placeholder="calcolato automaticamente" style="background:#f5f5f0;color:#888">
+
+      <label>Stato ordine</label>
+      <select id="stato">
+        <option>Inviato</option>
+        <option>Confermato</option>
+        <option>Ricevuto</option>
+        <option>Fatturato</option>
+        <option>Preventivo</option>
+      </select>
+
+      <label>Note</label>
+      <textarea id="note" rows="3" placeholder="Facoltativo"></textarea>
+
+      <button class="btn btn-primary" onclick="salvaOrdine()" id="btn-salva">Salva ordine</button>
+    </div>
+  </div>
+
+  <div id="tab-dashboard" class="section">
+    <div id="dash-loading" class="loading">Caricamento dati...</div>
+    <div id="dash-content" style="display:none">
+
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="metric-label">Spesa mese corrente</div>
+          <div class="metric-value" id="spesa-mese">—</div>
+          <div class="metric-sub" id="spesa-mese-sub"></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Totale ordini</div>
+          <div class="metric-value" id="tot-ordini">—</div>
+          <div class="metric-sub" id="tot-ordini-sub"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          Spesa per cantiere
+          <button class="refresh-btn" onclick="caricaDashboard()">↻ aggiorna</button>
+        </div>
+        <div class="bar-list" id="bar-cantieri"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Spesa per fornitore</div>
+        <div class="bar-list" id="bar-fornitori"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycbwJFhCpTMnUJ1gLpV2GSSCIJVCtznzPy1bL1fRTe1tLGOxF1D7jhlV45KBAC-XN-nJM/exec";
+
+function fmt(n){return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',minimumFractionDigits:0,maximumFractionDigits:0}).format(n);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function showError(msg){const e=document.getElementById('error-msg');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',4000);}
+
+async function fetchJson(params){
+  const res = await fetch(URL+'?'+new URLSearchParams(params));
+  return res.json();
+}
+
+async function caricaListe(){
+  try{
+    const [fornitori, cantieri] = await Promise.all([
+      fetchJson({tipo:'fornitori'}),
+      fetchJson({tipo:'cantieri'})
+    ]);
+    const dl = document.getElementById('lista_fornitori');
+    dl.innerHTML = fornitori.map(f=>`<option value="${f}">`).join('');
+    const sel = document.getElementById('cantiere');
+    sel.innerHTML = '<option value="">— seleziona —</option>' +
+      cantieri.map(c=>`<option value="${c}">${c}</option>`).join('');
+  }catch(e){
+    showError('Impossibile caricare fornitori e cantieri. Controlla la connessione.');
+  }
+}
+
+async function caricaDashboard(){
+  document.getElementById('dash-loading').style.display='block';
+  document.getElementById('dash-content').style.display='none';
+  try{
+    const ordini = await fetchJson({tipo:'ordini'});
+    if(!ordini.length){
+      document.getElementById('dash-loading').textContent='Nessun ordine ancora.';
+      return;
+    }
+
+    const oggi = new Date();
+    const meseCor = `${oggi.getFullYear()}-${String(oggi.getMonth()+1).padStart(2,'0')}`;
+
+    const ordiniMese = ordini.filter(o => {
+      const d = String(o.data_ordine);
+      return d.startsWith(meseCor) || d.includes('/'+String(oggi.getMonth()+1).padStart(2,'0')+'/'+oggi.getFullYear());
+    });
+
+    const totaleMese = ordiniMese.reduce((s,o)=>s+(parseFloat(o.totale)||0),0);
+    const totaleGenerale = ordini.reduce((s,o)=>s+(parseFloat(o.totale)||0),0);
+
+    document.getElementById('spesa-mese').textContent = fmt(totaleMese);
+    document.getElementById('spesa-mese-sub').textContent = `${ordiniMese.length} ordini questo mese`;
+    document.getElementById('tot-ordini').textContent = fmt(totaleGenerale);
+    document.getElementById('tot-ordini-sub').textContent = `${ordini.length} ordini totali`;
+
+    const byCantiere = {};
+    ordini.forEach(o=>{
+      const k = o.cantiere||'N/D';
+      byCantiere[k]=(byCantiere[k]||0)+(parseFloat(o.totale)||0);
+    });
+    const byFornitore = {};
+    ordini.forEach(o=>{
+      const k = o.fornitore||'N/D';
+      byFornitore[k]=(byFornitore[k]||0)+(parseFloat(o.totale)||0);
+    });
+
+    renderBars('bar-cantieri', byCantiere);
+    renderBars('bar-fornitori', byFornitore);
+
+    document.getElementById('dash-loading').style.display='none';
+    document.getElementById('dash-content').style.display='block';
+  }catch(e){
+    document.getElementById('dash-loading').textContent='Errore nel caricamento. Riprova.';
+  }
+}
+
+function renderBars(elId, data){
+  const sorted = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max = sorted[0]?.[1]||1;
+  document.getElementById(elId).innerHTML = sorted.map(([nome,val])=>`
+    <div class="bar-item">
+      <div class="bar-header">
+        <span class="bar-name">${nome}</span>
+        <span class="bar-val">${fmt(val)}</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(val/max*100)}%"></div></div>
+    </div>`).join('');
+}
+
+document.getElementById('quantita').addEventListener('input', calcTotale);
+document.getElementById('prezzo_unitario').addEventListener('input', calcTotale);
+function calcTotale(){
+  const q=parseFloat(document.getElementById('quantita').value)||0;
+  const p=parseFloat(document.getElementById('prezzo_unitario').value)||0;
+  document.getElementById('totale_preview').value = q&&p ? (q*p).toFixed(2) : '';
+}
+
+async function salvaOrdine(){
+  const fields = {
+    data_ordine: document.getElementById('data_ordine').value,
+    fornitore: document.getElementById('fornitore').value.trim(),
+    cantiere: document.getElementById('cantiere').value,
+    materiale: document.getElementById('materiale').value.trim(),
+    quantita: parseFloat(document.getElementById('quantita').value),
+    unita: document.getElementById('unita').value,
+    prezzo_unitario: parseFloat(document.getElementById('prezzo_unitario').value),
+    stato: document.getElementById('stato').value,
+    note: document.getElementById('note').value.trim()
+  };
+
+  if(!fields.data_ordine){showError('Inserisci la data ordine');return;}
+  if(!fields.fornitore){showError('Inserisci il fornitore');return;}
+  if(!fields.cantiere){showError('Seleziona il cantiere');return;}
+  if(!fields.materiale){showError('Inserisci il materiale');return;}
+  if(!fields.quantita||fields.quantita<=0){showError('Inserisci la quantità');return;}
+  if(!fields.prezzo_unitario||fields.prezzo_unitario<=0){showError('Inserisci il prezzo unitario');return;}
+
+  const btn = document.getElementById('btn-salva');
+  btn.textContent='Salvataggio...';btn.disabled=true;
+
+  try{
+    await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fields)});
+    showToast('Ordine salvato');
+    document.getElementById('fornitore').value='';
+    document.getElementById('cantiere').value='';
+    document.getElementById('materiale').value='';
+    document.getElementById('quantita').value='';
+    document.getElementById('prezzo_unitario').value='';
+    document.getElementById('totale_preview').value='';
+    document.getElementById('note').value='';
+    document.getElementById('stato').value='Inviato';
+    document.getElementById('data_ordine').value=new Date().toISOString().split('T')[0];
+  }catch(e){
+    showError('Errore durante il salvataggio. Riprova.');
+  }finally{
+    btn.textContent='Salva ordine';btn.disabled=false;
+  }
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['ordine','dashboard'][i]===name));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='dashboard')caricaDashboard();
+}
+
+document.getElementById('data_ordine').value=new Date().toISOString().split('T')[0];
+caricaListe();
+</script>
+</body>
+</html>
