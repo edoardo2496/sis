@@ -1,1 +1,190 @@
-<h1>Registrazione Ore Personale</h1>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edilcrema — Ore Cantiere</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    body {
+      background: #f2f4f7;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* BOTTONI TOP */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: #2196c4;
+      color: white;
+      border: none;
+    }
+
+    /* CARD */
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      max-width: 500px;
+      margin: auto;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      background: #fafafa;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2196c4;
+      background: white;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    /* BOTTONI ORE VELOCI */
+    .quick-hours {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .quick-hours button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #e3f2f9;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* SUBMIT */
+    .submit-btn {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: #2196c4;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-btn:active {
+      background: #197aa3;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>La costruisco subito:</h1>
+
+<div class="tabs">
+  <button class="active">Registra ore</button>
+  <button>Storico</button>
+  <button>Cantieri</button>
+</div>
+
+<div class="card">
+
+  <form method="POST" action="/salva_ore">
+
+    <!-- CANTIERE -->
+    <label>Cantiere</label>
+    <select name="cantiere" required>
+      <option value="">— scegli —</option>
+      {% for c in cantieri %}
+      <option value="{{ c['descrizione_cantiere'] }}">
+        {{ c['descrizione_cantiere'] }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <!-- DATA -->
+    <label>Data</label>
+    <input type="date" name="data" required>
+
+    <!-- ORE -->
+    <label>Ore lavorate</label>
+    <input type="number" step="0.25" name="ore" placeholder="es. 8" required>
+
+    <!-- BOTTONI RAPIDI -->
+    <div class="quick-hours">
+      <button type="button" onclick="setOre(8)">8h</button>
+      <button type="button" onclick="setOre(4)">4h</button>
+      <button type="button" onclick="setOre(2)">2h</button>
+    </div>
+
+    <!-- NOTE -->
+    <label>Note (facoltativo)</label>
+    <textarea name="note" rows="3" placeholder="es. getto fondazioni..."></textarea>
+
+    <!-- SUBMIT -->
+    <button type="submit" class="submit-btn">
+      Salva
+    </button>
+
+  </form>
+
+</div>
+
+<script>
+  function setOre(val) {
+    document.querySelector("input[name='ore']").value = val;
+  }
+
+  // imposta automaticamente la data di oggi
+  document.addEventListener("DOMContentLoaded", function () {
+    const oggi = new Date().toISOString().split("T")[0];
+    document.querySelector("input[name='data']").value = oggi;
+  });
+</script>
+
+</body>
+</html>
