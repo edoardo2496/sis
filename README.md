@@ -11,7 +11,7 @@ L'obiettivo è costruire un ecosistema leggero di strumenti web che permettano l
 ```
 App web (GitHub Pages)
         │
-        │  HTTP POST/GET
+        │  HTTP GET
         ▼
 Google Apps Script (endpoint pubblico)
         │
@@ -46,16 +46,18 @@ Web app per la registrazione degli ordini di acquisto nei cantieri.
 ---
 
 ### 🕐 Rendicontazione Ore Cantiere
-Web app mobile-first per la registrazione delle ore lavorate dal capocantiere.
+Web app mobile-first per la registrazione strutturata delle ore di manodopera nei cantieri, sviluppata per consentire ai capocantiere di rendicontare in modo preciso le ore ordinarie e straordinarie lavorate. I dati raccolti alimentano il processo di **costing industriale** delle opere edili, contribuendo alla costruzione del conto economico per cantiere.
 
 **Funzionalità:**
-- Inserimento ore per cantiere con data e note
-- Modalità offline con coda automatica di sincronizzazione
-- Invio automatico al Google Sheet al ripristino della connessione
-- Storico ore filtrabile per cantiere e per mese
-- Funziona da qualsiasi dispositivo senza installazione
+- Registrazione ore ordinarie e straordinarie per cantiere
+- Selezione tipologia lavoro (muratura, scavi, carpenteria, finiture, ecc.)
+- Bottoni rapidi per inserimento veloce delle ore più comuni
+- Storico registrazioni filtrabile per cantiere e per mese
+- Dashboard con totale ore per cantiere, per tipologia e confronto ordinarie/straordinarie
+- Cantieri caricati dinamicamente da Google Sheets
+- Ottimizzata per uso mobile in cantiere
 
-**Link:** [edoardo2496.github.io/sis/rendicontazione-ore](https://edoardo2496.github.io/sis/rendicontazione-ore)
+**Link:** [edoardo2496.github.io/sis/registrazione-ore-personale](https://edoardo2496.github.io/sis/registrazione-ore-personale)
 
 ---
 
@@ -65,7 +67,7 @@ Web app mobile-first per la registrazione delle ore lavorate dal capocantiere.
 |---|---|---|
 | Frontend | HTML / CSS / JavaScript | Nessun framework, zero dipendenze |
 | Hosting | GitHub Pages | Gratuito, sempre online |
-| API | Google Apps Script | Endpoint HTTP pubblico |
+| API | Google Apps Script | Endpoint HTTP pubblico via GET |
 | Database intermedio | Google Sheets | Accessibile ovunque |
 | Database analitico | SQLite | Locale, alimentato da Python |
 | Sincronizzazione | Python | Script schedulato |
@@ -78,14 +80,23 @@ Web app mobile-first per la registrazione delle ore lavorate dal capocantiere.
 sis/
 ├── gestionale-acquisti/
 │   └── index.html
-├── rendicontazione-ore/
+├── registrazione-ore-personale/
 │   └── index.html
 └── README.md
 ```
 
 ---
 
+## Flusso dati
+
+I dati inseriti dalle app web vengono centralizzati su Google Sheets tramite Google Apps Script. Uno script Python schedulato legge periodicamente i fogli e importa i dati nel database SQLite locale, dove vengono elaborati per:
+
+- **Conto economico per cantiere** — costi di acquisto + costo manodopera
+- **Analisi di costing industriale** — costo orario reale per tipologia di lavoro
+- **Controllo di gestione** — confronto costi previsti vs consuntivi
+
+---
+
 ## Sviluppo
 
 Progetto sviluppato da **Edoardo Crema** nell'ambito della digitalizzazione dei processi operativi e gestionali di Edilcrema snc.
-
