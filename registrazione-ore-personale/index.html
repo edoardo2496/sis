@@ -10,21 +10,49 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
     }
 
     body {
-      background: #f2f4f7;
-      padding: 20px;
-      color: #333;
+      background: #eef3f7;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #4f8fd8, #2d6fb5);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+    }
+
+    .header img {
+      height: 42px;
+      border-radius: 6px;
+      background: white;
+      padding: 4px;
+    }
+
+    .header span {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* CONTENITORE */
+    .container {
+      max-width: 520px;
+      margin: 30px auto;
+      padding: 0 16px;
     }
 
     h1 {
-      font-size: 20px;
+      font-size: 18px;
       margin-bottom: 16px;
+      color: #2d3a4b;
     }
 
-    /* BOTTONI TOP */
+    /* TAB */
     .tabs {
       display: flex;
       gap: 10px;
@@ -35,33 +63,31 @@
       flex: 1;
       padding: 12px;
       border-radius: 10px;
-      border: 1px solid #ccc;
-      background: #fff;
+      border: none;
+      background: #e4ecf5;
       font-weight: 600;
       cursor: pointer;
+      color: #2d3a4b;
     }
 
-    .tabs button.active {
-      background: #2196c4;
+    .tabs .active {
+      background: #2d6fb5;
       color: white;
-      border: none;
     }
 
     /* CARD */
     .card {
       background: white;
-      padding: 20px;
+      padding: 22px;
       border-radius: 14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      max-width: 500px;
-      margin: auto;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
 
     label {
       display: block;
       margin-top: 16px;
       font-size: 13px;
-      color: #555;
+      color: #5b6775;
     }
 
     input, select, textarea {
@@ -69,14 +95,14 @@
       margin-top: 6px;
       padding: 12px;
       border-radius: 8px;
-      border: 1px solid #ccc;
+      border: 1px solid #d0d7df;
+      background: #f8fafc;
       font-size: 15px;
-      background: #fafafa;
     }
 
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #2196c4;
+      border-color: #2d6fb5;
       background: white;
     }
 
@@ -84,7 +110,7 @@
       resize: none;
     }
 
-    /* BOTTONI ORE VELOCI */
+    /* BOTTONI ORE */
     .quick-hours {
       display: flex;
       gap: 10px;
@@ -96,9 +122,14 @@
       padding: 10px;
       border-radius: 8px;
       border: none;
-      background: #e3f2f9;
+      background: #dbe7f5;
       cursor: pointer;
       font-weight: 600;
+      color: #2d6fb5;
+    }
+
+    .quick-hours button:hover {
+      background: #c7dbf2;
     }
 
     /* SUBMIT */
@@ -108,69 +139,72 @@
       padding: 14px;
       border-radius: 10px;
       border: none;
-      background: #2196c4;
+      background: #2d6fb5;
       color: white;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .submit-btn:active {
-      background: #197aa3;
+    .submit-btn:hover {
+      background: #245a94;
     }
+
   </style>
 </head>
 
 <body>
 
-<h1>La costruisco subito:</h1>
-
-<div class="tabs">
-  <button class="active">Registra ore</button>
-  <button>Storico</button>
-  <button>Cantieri</button>
+<!-- HEADER -->
+<div class="header">
+  <img src="logo_edilcrema.jpg" alt="Edilcrema">
+  <span>Gestione ore cantiere</span>
 </div>
 
-<div class="card">
+<div class="container">
 
-  <form method="POST" action="/salva_ore">
+  <h1>La costruisco subito:</h1>
 
-    <!-- CANTIERE -->
-    <label>Cantiere</label>
-    <select name="cantiere" required>
-      <option value="">— scegli —</option>
-      {% for c in cantieri %}
-      <option value="{{ c['descrizione_cantiere'] }}">
-        {{ c['descrizione_cantiere'] }}
-      </option>
-      {% endfor %}
-    </select>
+  <div class="tabs">
+    <button class="active">Registra ore</button>
+    <button>Storico</button>
+    <button>Cantieri</button>
+  </div>
 
-    <!-- DATA -->
-    <label>Data</label>
-    <input type="date" name="data" required>
+  <div class="card">
 
-    <!-- ORE -->
-    <label>Ore lavorate</label>
-    <input type="number" step="0.25" name="ore" placeholder="es. 8" required>
+    <form method="POST" action="/salva_ore">
 
-    <!-- BOTTONI RAPIDI -->
-    <div class="quick-hours">
-      <button type="button" onclick="setOre(8)">8h</button>
-      <button type="button" onclick="setOre(4)">4h</button>
-      <button type="button" onclick="setOre(2)">2h</button>
-    </div>
+      <label>Cantiere</label>
+      <select name="cantiere" required>
+        <option value="">— scegli —</option>
+        {% for c in cantieri %}
+        <option value="{{ c['descrizione_cantiere'] }}">
+          {{ c['descrizione_cantiere'] }}
+        </option>
+        {% endfor %}
+      </select>
 
-    <!-- NOTE -->
-    <label>Note (facoltativo)</label>
-    <textarea name="note" rows="3" placeholder="es. getto fondazioni..."></textarea>
+      <label>Data</label>
+      <input type="date" name="data" required>
 
-    <!-- SUBMIT -->
-    <button type="submit" class="submit-btn">
-      Salva
-    </button>
+      <label>Ore lavorate</label>
+      <input type="number" step="0.25" name="ore" placeholder="es. 8" required>
 
-  </form>
+      <div class="quick-hours">
+        <button type="button" onclick="setOre(8)">8h</button>
+        <button type="button" onclick="setOre(4)">4h</button>
+        <button type="button" onclick="setOre(2)">2h</button>
+      </div>
+
+      <label>Note (facoltativo)</label>
+      <textarea name="note" rows="3" placeholder="es. getto fondazioni..."></textarea>
+
+      <button type="submit" class="submit-btn">Salva</button>
+
+    </form>
+
+  </div>
 
 </div>
 
@@ -179,7 +213,6 @@
     document.querySelector("input[name='ore']").value = val;
   }
 
-  // imposta automaticamente la data di oggi
   document.addEventListener("DOMContentLoaded", function () {
     const oggi = new Date().toISOString().split("T")[0];
     document.querySelector("input[name='data']").value = oggi;
