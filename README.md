@@ -41,8 +41,6 @@ Web app per la registrazione degli ordini di acquisto nei cantieri.
 - Dashboard con spesa per cantiere, spesa per fornitore, totale mese corrente
 - Fornitori e cantieri caricati dinamicamente da Google Sheets
 
-**Link:** [edoardo2496.github.io/sis/gestionale-acquisti](https://edoardo2496.github.io/sis/gestionale-acquisti)
-
 ---
 
 ### 🕐 Rendicontazione Ore Cantiere
@@ -56,8 +54,6 @@ Web app mobile-first per la registrazione strutturata delle ore di manodopera ne
 - Dashboard con totale ore per cantiere, per tipologia e confronto ordinarie/straordinarie
 - Cantieri caricati dinamicamente da Google Sheets
 - Ottimizzata per uso mobile in cantiere
-
-**Link:** [edoardo2496.github.io/sis/registrazione-ore-personale](https://edoardo2496.github.io/sis/registrazione-ore-personale)
 
 ---
 
