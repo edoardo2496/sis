@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Edilcrema — Gestionale Acquisti Multi-Articolo</title>
+<title>Edilcrema — Gestionale Acquisti</title>
 <style>
+/* STILI ORIGINALI RIPRISTINATI */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
 .header{background:#2196c4;padding:12px 20px;display:flex;align-items:center;gap:12px}
@@ -12,6 +13,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .header-text{display:flex;flex-direction:column}
 .header-title{color:#fff;font-size:17px;font-weight:600;line-height:1.2}
 .header-sub{color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px}
+
+/* STILI APP E TAB */
 .app{max-width:520px;margin:0 auto;padding:1rem}
 .tab-bar{display:flex;gap:8px;margin-bottom:1.5rem}
 .tab{flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:13px;color:#666;cursor:pointer;font-family:inherit}
@@ -23,40 +26,32 @@ label:first-child{margin-top:0}
 select,input,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fff;color:#1a1a1a;font-family:inherit}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* STILI RIGHE ARTICOLI */
-.item-row{background:#fcfcfc;border:1px solid #eee;border-radius:8px;padding:12px;margin-bottom:12px;position:relative; border-left: 4px solid #2196c4;}
-.btn-remove{position:absolute;top:5px;right:5px;background:#ff4444;color:white;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-weight:bold}
-.btn-add{background:#fff;color:#2196c4;border:1px dashed #2196c4;width:100%;padding:10px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:600}
-.btn-add:hover{background:#e3f2fd}
-.total-box{background:#e3f2fd;border:1px solid #2196c4;text-align:right;padding:12px;border-radius:8px;margin-top:10px;margin-bottom:20px}
+/* NUOVI STILI PER RIGHE MULTIPLE (DISCRETI) */
+.item-row{background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:12px;margin-bottom:12px;position:relative; border-left: 4px solid #2196c4;}
+.btn-remove{position:absolute;top:8px;right:8px;background:#ff4444;color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:14px}
+.btn-add{background:none;color:#2196c4;border:1px dashed #2196c4;width:100%;padding:10px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:600;font-size:14px}
+.total-box{background:#e3f2fd;border:1px solid #2196c4;text-align:right;padding:12px;border-radius:8px;margin-bottom:20px}
 .total-box span{font-weight:700;color:#2196c4;font-size:18px}
+.btn-primary{background:#2196c4;color:#fff;border:none;width:100%;padding:15px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer}
 
-.btn-primary{background:#2196c4;color:#fff;border:none;width:100%;padding:15px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-top:10px}
-.btn-primary:disabled{background:#ccc}
-
-.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.metric{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem}
-.metric-value{font-size:20px;font-weight:600}
-
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;opacity:0;transition:0.3s;z-index:999;pointer-events:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;opacity:0;transition:0.3s;z-index:999}
 .toast.show{opacity:1}
 
 @media(prefers-color-scheme:dark){
     body{background:#111;color:#eee}
-    .card,.metric,.item-row{background:#1e1e1e;border-color:#333}
+    .card,.item-row{background:#1e1e1e;border-color:#333}
     select,input,textarea{background:#222;color:#eee;border-color:#444}
     .total-box{background:#172a3a}
-    .btn-add{background:#1e1e1e}
 }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <img src="https://via.placeholder.com/44x44/2196c4/ffffff?text=E" alt="Edilcrema">
+  <img src="data:image/jpeg;base64,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" alt="Edilcrema">
   <div class="header-text">
-    <div class="header-title">Edilcrema snc</div>
-    <div class="header-sub">Nuovo Sistema Ordini Multipli</div>
+    <div class="header-title">Gestionale Acquisti</div>
+    <div class="header-sub">Edilcrema snc</div>
   </div>
 </div>
 
@@ -76,21 +71,21 @@ select,input,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-
       <datalist id="lista_fornitori"></datalist>
       
       <label>Cantiere</label>
-      <select id="cantiere"><option value="">— seleziona cantiere —</option></select>
+      <select id="cantiere"><option value="">— seleziona —</option></select>
       
       <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-      <div style="font-weight:600; margin-bottom:10px; font-size:14px; color:#2196c4">ARTICOLI NEL DOCUMENTO</div>
+      <div style="font-weight:600; margin-bottom:12px; font-size:14px; color:#2196c4; text-transform: uppercase; letter-spacing: 0.5px;">Articoli</div>
       
       <div id="items-list">
           </div>
       
-      <button class="btn-add" onclick="aggiungiRiga()">+ Aggiungi un altro materiale</button>
+      <button class="btn-add" onclick="aggiungiRiga()">+ Aggiungi materiale</button>
 
       <div class="total-box">
-        TOTALE ORDINE: <span id="gran_totale">€ 0,00</span>
+        TOTALE DOCUMENTO: <span id="gran_totale">€ 0,00</span>
       </div>
 
-      <label>Stato</label>
+      <label>Stato ordine</label>
       <select id="stato">
         <option>Inviato</option>
         <option>Confermato</option>
@@ -99,28 +94,20 @@ select,input,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-
         <option>Preventivo</option>
       </select>
       
-      <label>Note generali</label>
-      <textarea id="note" placeholder="Note facoltative..."></textarea>
+      <label>Note</label>
+      <textarea id="note" rows="2" placeholder="Note facoltative..."></textarea>
       
-      <button class="btn-primary" onclick="salvaTutto()" id="btn-salva">Salva nel Foglio Google</button>
+      <button class="btn-primary" onclick="salvaTutto()" id="btn-salva">Salva ordine</button>
     </div>
   </div>
 
   <div id="tab-dashboard" class="section">
-    <div id="dash-loading" style="text-align:center;padding:2rem;color:#888">Caricamento dati...</div>
+    <div id="dash-loading" style="text-align:center;padding:2rem;color:#aaa">Caricamento...</div>
     <div id="dash-content" style="display:none">
-        <div class="metric-grid">
-            <div class="metric">
-                <div style="font-size:12px;color:#888">Spesa Totale</div>
-                <div class="metric-value" id="tot-ordini">€ 0</div>
-            </div>
-            <div class="metric">
-                <div style="font-size:12px;color:#888">Righe elaborate</div>
-                <div class="metric-value" id="count-ordini">0</div>
-            </div>
+        <div class="card">
+            <div style="font-size:12px;color:#888">Totale ordini caricati</div>
+            <div style="font-size:24px;font-weight:700" id="tot-ordini">€ 0</div>
         </div>
-        <div class="card" id="bar-cantieri">
-            </div>
     </div>
   </div>
 </div>
@@ -128,52 +115,45 @@ select,input,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-
 <div class="toast" id="toast"></div>
 
 <script>
-// CONFIGURAZIONE
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJFhCpTMnUJ1gLpV2GSSCIJVCtznzPy1bL1fRTe1tLGOxF1D7jhlV45KBAC-XN-nJM/exec";
 let rigaCounter = 0;
 
-// Formattazione Euro
 function fmt(n){return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(n);}
 
-// Aggiunge una riga materiale vuota
 function aggiungiRiga() {
     const container = document.getElementById('items-list');
     const id = rigaCounter++;
     const html = `
         <div class="item-row" id="row-${id}">
             <button class="btn-remove" onclick="rimuoviRiga(${id})">×</button>
-            <label>Descrizione Materiale</label>
-            <input type="text" class="i-mat" placeholder="es. Sabbia, Cemento...">
+            <label>Materiale</label>
+            <input type="text" class="i-mat" placeholder="es. Ferro, Calcestruzzo...">
             <div class="row">
                 <div>
                     <label>Quantità</label>
-                    <input type="number" class="i-qta" oninput="calc()" placeholder="0" step="any">
+                    <input type="number" class="i-qta" oninput="calc()" placeholder="0">
                 </div>
                 <div>
                     <label>Unità</label>
                     <select class="i-uni">
-                        <option>pz</option><option>kg</option><option>mc</option><option>mq</option><option>t</option><option>ml</option>
+                        <option>kg</option><option>mc</option><option>mq</option><option>pz</option><option>t</option><option>ml</option>
                     </select>
                 </div>
             </div>
-            <label>Prezzo Unitario (€)</label>
+            <label>Prezzo unitario (€)</label>
             <input type="number" class="i-pre" oninput="calc()" placeholder="0.00" step="0.01">
         </div>`;
     container.insertAdjacentHTML('beforeend', html);
 }
 
-// Rimuove una riga
 function rimuoviRiga(id) {
     const rows = document.querySelectorAll('.item-row');
     if(rows.length > 1) {
         document.getElementById(`row-${id}`).remove();
         calc();
-    } else {
-        alert("Deve esserci almeno un materiale per ordine.");
     }
 }
 
-// Calcola il totale complessivo di tutte le righe
 function calc() {
     let tot = 0;
     document.querySelectorAll('.item-row').forEach(r => {
@@ -184,12 +164,10 @@ function calc() {
     document.getElementById('gran_totale').textContent = fmt(tot);
 }
 
-// Invia i dati a Google Apps Script
 async function salvaTutto() {
     const btn = document.getElementById('btn-salva');
     const articoli = [];
     
-    // Raccogliamo i dati di ogni riga
     document.querySelectorAll('.item-row').forEach(r => {
         const mat = r.querySelector('.i-mat').value.trim();
         const qta = r.querySelector('.i-qta').value;
@@ -204,53 +182,38 @@ async function salvaTutto() {
         }
     });
 
-    // Validazione base
-    const dataOrd = document.getElementById('data_ordine').value;
-    const forn = document.getElementById('fornitore').value;
-    const cant = document.getElementById('cantiere').value;
+    const params = {
+        tipo: 'salva',
+        data_ordine: document.getElementById('data_ordine').value,
+        fornitore: document.getElementById('fornitore').value,
+        cantiere: document.getElementById('cantiere').value,
+        stato: document.getElementById('stato').value,
+        note: document.getElementById('note').value,
+        articoli: JSON.stringify(articoli)
+    };
 
-    if(!dataOrd || !forn || !cant || articoli.length === 0) {
-        alert("Assicurati di aver inserito Data, Fornitore, Cantiere e almeno un Materiale valido.");
+    if(!params.data_ordine || !params.fornitore || articoli.length === 0) {
+        alert("Compila i dati principali e almeno un articolo!");
         return;
     }
 
-    const params = {
-        tipo: 'salva',
-        data_ordine: dataOrd,
-        fornitore: forn,
-        cantiere: cant,
-        stato: document.getElementById('stato').value,
-        note: document.getElementById('note').value,
-        articoli: JSON.stringify(articoli) // Inviamo l'array come testo JSON
-    };
-
     btn.disabled = true;
-    btn.textContent = "Invio in corso...";
+    btn.textContent = "Salvataggio...";
 
     try {
-        // Usiamo mode: 'no-cors' per evitare blocchi cross-origin
         await fetch(SCRIPT_URL + '?' + new URLSearchParams(params), { mode: 'no-cors' });
-        
-        // Mostra successo
-        const t = document.getElementById('toast');
-        t.textContent = "Ordine inviato con successo!";
-        t.classList.add('show');
-        
-        setTimeout(() => {
-            location.reload(); // Ricarica per pulire tutto
-        }, 1500);
-
+        document.getElementById('toast').textContent = "Ordine salvato!";
+        document.getElementById('toast').classList.add('show');
+        setTimeout(() => location.reload(), 1500);
     } catch(e) {
-        alert("Errore durante il salvataggio: " + e.message);
+        alert("Errore!");
         btn.disabled = false;
-        btn.textContent = "Salva nel Foglio Google";
     }
 }
 
-// Inizializzazione dati
 async function init() {
     document.getElementById('data_ordine').value = new Date().toISOString().split('T')[0];
-    aggiungiRiga(); // Parte con una riga vuota
+    aggiungiRiga();
     
     try {
         const resF = await fetch(SCRIPT_URL + "?tipo=fornitori");
@@ -260,34 +223,16 @@ async function init() {
         const resC = await fetch(SCRIPT_URL + "?tipo=cantieri");
         const cantieri = await resC.json();
         document.getElementById('cantiere').innerHTML += cantieri.map(c => `<option value="${c}">${c}</option>`).join('');
-    } catch(e) {
-        console.error("Errore caricamento liste:", e);
-    }
+    } catch(e) {}
 }
 
 function switchTab(name) {
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['ordine', 'dashboard'][i] === name));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
-    if (name === 'dashboard') caricaDashboard();
-}
-
-async function caricaDashboard() {
-    try {
-        const res = await fetch(SCRIPT_URL + "?tipo=ordini");
-        const ordini = await res.json();
-        const tot = ordini.reduce((acc, o) => acc + o.totale, 0);
-        document.getElementById('tot-ordini').textContent = fmt(tot);
-        document.getElementById('count-ordini').textContent = ordini.length;
-        document.getElementById('dash-loading').style.display = 'none';
-        document.getElementById('dash-content').style.display = 'block';
-    } catch(e) {
-        document.getElementById('dash-loading').textContent = "Errore caricamento dashboard.";
-    }
 }
 
 init();
 </script>
-
 </body>
 </html>
