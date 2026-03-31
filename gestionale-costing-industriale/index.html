@@ -1,1 +1,206 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Edilcrema — Costing Industriale</title>
+    <style>
+        :root { --primary: #2196c4; --bg: #f5f5f0; --card: #ffffff; --text: #1a1a1a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+        
+        /* Header */
+        .header { background: var(--primary); padding: 15px; color: white; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header img { height: 50px; border-radius: 8px; }
+        .header h1 { font-size: 18px; font-weight: 600; }
 
+        .container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; margin-bottom: 15px; }
+        
+        h2 { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+        /* Form */
+        .field { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #444; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; 
+            appearance: none; -webkit-appearance: none; background-color: #fff;
+        }
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(33,150,196,0.2); }
+        
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .btn { 
+            width: 100%; padding: 15px; background: var(--primary); color: white; border: none; 
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn:disabled { background: #ccc; }
+
+        /* Feedback */
+        #status { text-align: center; margin-top: 15px; font-size: 14px; font-weight: 500; }
+        .success { color: #2e7d32; }
+        .error { color: #c62828; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <img src="https://via.placeholder.com/50" alt="Logo"> <div>
+        <h1>Edilcrema snc</h1>
+        <p style="font-size: 12px; opacity: 0.8;">Costing Industriale & Controllo Cantieri</p>
+    </div>
+</div>
+
+<div class="container">
+    <form id="costingForm">
+        <div class="card">
+            <h2>Dati Generali</h2>
+            <div class="field">
+                <label>Data Competenza</label>
+                <input type="date" id="data" required>
+            </div>
+            <div class="field">
+                <label>Cantiere / Centro di Costo</label>
+                <select id="cantiere" required>
+                    <option value="">Seleziona Cantiere...</option>
+                    </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Classificazione Costo</h2>
+            <div class="field">
+                <label>Macro Categoria</label>
+                <select id="macro" onchange="updateMicro()" required>
+                    <option value="">— Seleziona Macro —</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Micro Categoria (Dettaglio)</label>
+                <input type="text" id="micro" list="micro_list" placeholder="Scrivi o seleziona...">
+                <datalist id="micro_list"></datalist>
+            </div>
+            <div class="field">
+                <label>Fornitore / Risorsa</label>
+                <input type="text" id="fornitore" placeholder="Nome fornitore o dipendente">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Analisi Economica</h2>
+            <div class="row">
+                <div class="field">
+                    <label>Quantità</label>
+                    <input type="number" id="qty" step="0.01" value="1" oninput="calcTotal()">
+                </div>
+                <div class="field">
+                    <label>Unità</label>
+                    <select id="unit">
+                        <option>n°</option><option>mc</option><option>mq</option><option>kg</option><option>t</option><option>ore</option><option>litri</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label>Prezzo Unitario (€)</label>
+                <input type="number" id="price" step="0.001" placeholder="0.00" oninput="calcTotal()" required>
+            </div>
+            <div class="field">
+                <label>Totale Impegnato (€)</label>
+                <input type="text" id="total" readonly style="background: #f9f9f9; font-weight: bold; color: var(--primary);">
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn">REGISTRA COSTO</button>
+        <div id="status"></div>
+    </form>
+</div>
+
+<script>
+    const SCRIPT_URL = "IL_TUO_URL_DI_GOOGLE_APPS_SCRIPT";
+
+    const MAPPATURA = {
+        "Materie prime": ["Cementi", "Acciai", "Legnami", "Laterizi", "Aggregati", "Pietre Naturali", "Ferro", "Plastica"],
+        "Semilavorati": ["Pannelli prefabbricati", "Serramenti", "Isolanti", "Riciclato"],
+        "Materiali di consumo": ["Chiodi", "Viti", "Bulloni", "Colle", "Sigillanti", "Vernici", "Solventi", "Reti per riecinzioni", "Reti metalliche"],
+        "Costo del Personale": ["Ore ordinarie", "Ore straordinarie"],
+        "Macchinari": ["Manutenzione", "Bollo", "Assicurazione"],
+        "Carburanti": ["Carburanti"],
+        "Progettazione": ["Progettazione_ing", "Progettazione_arch"],
+        "Costo unico": ["Trasporti", "Costo unico"]
+    };
+
+    const CANTIERI = ["Via Roma 12", "Piazza Duomo", "Ristrutturazione Rossi", "Manutenzione Snc"];
+
+    // Inizializzazione
+    window.onload = () => {
+        document.getElementById('data').valueAsDate = new Date();
+        
+        // Popola Cantieri
+        const cSel = document.getElementById('cantiere');
+        CANTIERI.forEach(c => cSel.add(new Option(c, c)));
+
+        // Popola Macro
+        const mSel = document.getElementById('macro');
+        Object.keys(MAPPATURA).forEach(m => mSel.add(new Option(m, m)));
+    };
+
+    function updateMicro() {
+        const macro = document.getElementById('macro').value;
+        const list = document.getElementById('micro_list');
+        list.innerHTML = "";
+        if(MAPPATURA[macro]) {
+            MAPPATURA[macro].forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                list.appendChild(opt);
+            });
+        }
+    }
+
+    function calcTotal() {
+        const q = parseFloat(document.getElementById('qty').value) || 0;
+        const p = parseFloat(document.getElementById('price').value) || 0;
+        document.getElementById('total').value = (q * p).toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
+    }
+
+    document.getElementById('costingForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        status.innerHTML = "Invio in corso...";
+
+        const data = {
+            data: document.getElementById('data').value,
+            cantiere: document.getElementById('cantiere').value,
+            macro: document.getElementById('macro').value,
+            micro: document.getElementById('micro').value,
+            fornitore: document.getElementById('fornitore').value,
+            qty: document.getElementById('qty').value,
+            unit: document.getElementById('unit').value,
+            price: document.getElementById('price').value,
+            total: parseFloat(document.getElementById('qty').value) * parseFloat(document.getElementById('price').value)
+        };
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Importante per Google Apps Script
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            status.innerHTML = "<span class='success'>Dato registrato con successo!</span>";
+            document.getElementById('costingForm').reset();
+            document.getElementById('data').valueAsDate = new Date();
+        } catch (error) {
+            status.innerHTML = "<span class='error'>Errore di connessione.</span>";
+        } finally {
+            btn.disabled = false;
+        }
+    };
+</script>
+
+</body>
+</html>
