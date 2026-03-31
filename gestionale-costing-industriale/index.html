@@ -15,166 +15,213 @@
 
         /* Header */
         .header { background: var(--dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: 1px; }
-        .header i { font-size: 1.4rem; color: var(--primary); }
+        .header h1 { font-size: 1.1rem; font-weight: 600; }
+        
+        .nav-tabs { display: flex; background: white; border-bottom: 1px solid var(--border); }
+        .nav-tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: #6b7280; transition: 0.3s; }
+        .nav-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: #f8fbff; }
 
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; width: 100%; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; width: 100%; flex-grow: 1; }
 
         /* Form Card */
-        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
-        .section-title { font-size: 0.9rem; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
+        .section-title { font-size: 0.85rem; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--bg); padding-bottom: 8px; }
 
-        /* Layout Grids */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .full { grid-column: span 2; }
         @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .full { grid-column: span 1; } }
 
-        /* Inputs */
-        .field { margin-bottom: 18px; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--dark); }
-        select, input, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 1rem; color: var(--dark); transition: all 0.2s; }
-        select:focus, input:focus { border-color: var(--primary); outline: none; background: #f8fbff; }
+        .field { margin-bottom: 15px; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; color: var(--dark); }
+        select, input, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 1rem; transition: 0.2s; background: #fff; color: var(--dark); }
+        select:focus, input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
         
         input[readonly] { background: #f9fafb; font-weight: bold; color: var(--primary); border-style: dashed; }
 
-        /* Buttons */
-        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; margin-top: 10px; }
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; }
         .btn-submit:active { transform: scale(0.98); }
         .btn-submit:disabled { background: #9ca3af; }
 
-        /* Status & Loaders */
-        #status { text-align: center; margin-top: 15px; font-weight: 600; min-height: 24px; }
-        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        #status { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 20px; }
+        
+        /* Loader */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loading-overlay"><i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary);"></i></div>
+<div id="loader" class="loading-overlay">
+    <div class="spinner"></div>
+    <p id="loader-text">Sincronizzazione con Edilcrema Cloud...</p>
+</div>
 
 <div class="header">
     <div style="display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-hard-hat"></i>
-        <h1>EDILCREMA <span style="font-weight: 300;">COSTING</span></h1>
+        <i class="fas fa-city"></i>
+        <h1>EDILCREMA <span style="font-weight: 300;">ERP</span></h1>
     </div>
-    <div id="conn-status"><i class="fas fa-circle" style="font-size: 10px; color: #10b981;"></i></div>
+    <div id="online-tag"><i class="fas fa-circle" style="color: var(--success); font-size: 10px;"></i> LIVE</div>
+</div>
+
+<div class="nav-tabs">
+    <div class="nav-tab active" id="tab-btn-input" onclick="switchTab('input')"><i class="fas fa-plus-circle"></i> Inserimento</div>
+    <div class="nav-tab" id="tab-btn-dash" onclick="switchTab('dash')"><i class="fas fa-chart-pie"></i> Dashboard</div>
 </div>
 
 <div class="container">
-    <form id="erpForm">
-        
-        <div class="card">
-            <div class="section-title"><i class="fas fa-map-marker-alt"></i> Localizzazione & Tempo</div>
-            <div class="grid">
-                <div class="field">
-                    <label>Data Registrazione</label>
-                    <input type="date" id="data" required>
-                </div>
-                <div class="field">
-                    <label>Cantiere Target</label>
-                    <select id="cantiere" required>
-                        <option value="">Caricamento cantieri...</option>
-                    </select>
+    
+    <div id="tab-input">
+        <form id="erpForm">
+            <div class="card">
+                <div class="section-title"><i class="fas fa-info-circle"></i> Intestazione Ordine</div>
+                <div class="grid">
+                    <div class="field">
+                        <label>Data</label>
+                        <input type="date" id="data" required>
+                    </div>
+                    <div class="field">
+                        <label>Cantiere</label>
+                        <select id="cantiere" required>
+                            <option value="">Caricamento...</option>
+                        </select>
+                    </div>
+                    <div class="field full">
+                        <label>Fornitore / Risorsa</label>
+                        <input type="text" id="fornitore" list="fornitore_list" placeholder="Cerca fornitore..." required>
+                        <datalist id="fornitore_list"></datalist>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="section-title"><i class="fas fa-tags"></i> Classificazione Industriale</div>
-            <div class="grid">
-                <div class="field">
-                    <label>Macro Categoria</label>
-                    <select id="macro" onchange="updateMicro()" required>
-                        <option value="">— Seleziona —</option>
-                    </select>
+            <div class="card">
+                <div class="section-title"><i class="fas fa-layer-group"></i> Classificazione Costi</div>
+                <div class="grid">
+                    <div class="field">
+                        <label>Macro Categoria</label>
+                        <select id="macro" onchange="updateMicro()" required>
+                            <option value="">— Seleziona —</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Voce di Costo (Micro)</label>
+                        <input type="text" id="micro" list="micro_list" placeholder="Seleziona voce..." required>
+                        <datalist id="micro_list"></datalist>
+                    </div>
                 </div>
-                <div class="field">
-                    <label>Micro Categoria / Voce</label>
-                    <input type="text" id="micro" list="micro_list" placeholder="Cerca voce..." required>
-                    <datalist id="micro_list"></datalist>
+            </div>
+
+            <div class="card">
+                <div class="section-title"><i class="fas fa-euro-sign"></i> Analisi Economica</div>
+                <div class="grid">
+                    <div class="field">
+                        <label>Quantità</label>
+                        <input type="number" id="qty" step="0.01" value="1.00" oninput="calcTotal()">
+                    </div>
+                    <div class="field">
+                        <label>Unità di Misura</label>
+                        <select id="unit">
+                            <option value="nr">nr (pezzi)</option>
+                            <option value="m">m (lineari)</option>
+                            <option value="ml">ml (lineari specifici)</option>
+                            <option value="mq">mq (metri quadri)</option>
+                            <option value="mc">mc (metri cubi)</option>
+                            <option value="kg">kg</option>
+                            <option value="q">q (quintali)</option>
+                            <option value="t">t (tonnellate)</option>
+                            <option value="ore">ore</option>
+                            <option value="corpo">a corpo</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Prezzo Unitario (€)</label>
+                        <input type="number" id="price" step="0.001" placeholder="0.00" oninput="calcTotal()" required>
+                    </div>
+                    <div class="field">
+                        <label>Totale Riga</label>
+                        <input type="text" id="total" readonly value="€ 0,00">
+                    </div>
                 </div>
                 <div class="field full">
-                    <label>Fornitore / Risorsa</label>
-                    <input type="text" id="fornitore" list="fornitore_list" placeholder="Inizia a scrivere per cercare..." required>
-                    <datalist id="fornitore_list"></datalist>
+                    <label>Note / Rif. Documento</label>
+                    <textarea id="note" rows="2" placeholder="Note aggiuntive o numero fattura/bolla..."></textarea>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="section-title"><i class="fas fa-calculator"></i> Dati Quantitativi & Valore</div>
-            <div class="grid">
-                <div class="field">
-                    <label>Quantità</label>
-                    <input type="number" id="qty" step="0.01" value="1.00" oninput="calcTotal()">
-                </div>
-                <div class="field">
-                    <label>Unità Misura</label>
-                    <select id="unit">
-                        <option>n°</option><option>mc</option><option>mq</option><option>kg</option><option>t</option><option>ore</option><option>litri</option><option>corpo</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Prezzo Unitario (€)</label>
-                    <input type="number" id="price" step="0.001" placeholder="0.00" oninput="calcTotal()" required>
-                </div>
-                <div class="field">
-                    <label>TOTALE RIGA</label>
-                    <input type="text" id="total" readonly value="€ 0,00">
-                </div>
-            </div>
-            <div class="field full">
-                <label>Note Interne / Riferimento Documento</label>
-                <textarea id="note" rows="2" placeholder="Es: Fattura n. 12 del 20/03 o nota tecnica..."></textarea>
-            </div>
-        </div>
+            <button type="submit" id="submitBtn" class="btn-submit">
+                <i class="fas fa-save"></i> REGISTRA NEL SISTEMA
+            </button>
+            <div id="status"></div>
+        </form>
+    </div>
 
-        <button type="submit" id="submitBtn" class="btn-submit">
-            <i class="fas fa-cloud-upload-alt"></i> REGISTRA NEL SISTEMA
-        </button>
-        <div id="status"></div>
-    </form>
+    <div id="tab-dash" style="display:none;">
+        <div class="card" style="text-align: center; padding: 50px 20px;">
+            <i class="fas fa-chart-line fa-4x" style="color: var(--primary); margin-bottom: 20px;"></i>
+            <h3>Dashboard in Arrivo</h3>
+            <p style="margin-top: 10px; color: #6b7280;">Stiamo elaborando i dati del tuo foglio Google per mostrarti i grafici di cantiere.</p>
+        </div>
+    </div>
 </div>
 
 <script>
-    // URL DISTRIBUZIONE GOOGLE APPS SCRIPT
-    const SCRIPT_URL = "INCOLLA_QUI_IL_TUO_URL_APPS_SCRIPT";
+    // URL CONFIGURATO
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgzPBU7EVwxZRfVt-Mhsth44NfIl2Dqi_iGSrQTT91poAjvdn_B7x420Tl1Y5LGLVX7A/exec";
     
     let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
 
     window.onload = async () => {
         document.getElementById('data').valueAsDate = new Date();
         const loader = document.getElementById('loader');
+        const loaderText = document.getElementById('loader-text');
 
         try {
+            console.log("Inizio fetch dati...");
             const response = await fetch(SCRIPT_URL);
-            DATA_STORE = await response.json();
             
+            if (!response.ok) throw new Error("Errore risposta Google");
+            
+            DATA_STORE = await response.json();
+            console.log("Dati caricati:", DATA_STORE);
+
             // Popola Cantieri
             const cSel = document.getElementById('cantiere');
             cSel.innerHTML = '<option value="">— Scegli Cantiere —</option>';
-            DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
+            DATA_STORE.cantieri.forEach(c => { if(c) cSel.add(new Option(c, c)); });
 
             // Popola Macro
             const mSel = document.getElementById('macro');
-            Object.keys(DATA_STORE.mappatura).sort().forEach(m => mSel.add(new Option(m, m)));
+            mSel.innerHTML = '<option value="">— Seleziona Macro —</option>';
+            Object.keys(DATA_STORE.mappatura).sort().forEach(m => {
+                mSel.add(new Option(m, m));
+            });
 
             // Popola Fornitori
-            document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
+            document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori
+                .filter(f => f)
+                .map(f => `<option value="${f}">`).join('');
             
             loader.style.display = 'none';
+
         } catch (error) {
-            console.error("Errore inizializzazione:", error);
-            alert("Errore di connessione al database!");
+            console.error("Errore Caricamento:", error);
+            loaderText.innerHTML = "<span style='color:red'>Errore di connessione!<br>Controlla che i fogli su Google siano nominati correttamente.</span>";
         }
     };
+
+    function switchTab(tab) {
+        document.getElementById('tab-input').style.display = tab === 'input' ? 'block' : 'none';
+        document.getElementById('tab-dash').style.display = tab === 'dash' ? 'block' : 'none';
+        document.getElementById('tab-btn-input').classList.toggle('active', tab === 'input');
+        document.getElementById('tab-btn-dash').classList.toggle('active', tab === 'dash');
+    }
 
     function updateMicro() {
         const macro = document.getElementById('macro').value;
         const list = document.getElementById('micro_list');
         const microInput = document.getElementById('micro');
-        
-        list.innerHTML = "";
-        microInput.value = "";
+        list.innerHTML = ""; microInput.value = "";
         
         if(DATA_STORE.mappatura[macro]) {
             DATA_STORE.mappatura[macro].forEach(m => {
@@ -198,7 +245,7 @@
         const status = document.getElementById('status');
         
         btn.disabled = true;
-        status.innerHTML = '<i class="fas fa-sync fa-spin"></i> Comunicazione con Google Sheets...';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrazione in corso...';
 
         const payload = {
             data: document.getElementById('data').value,
@@ -220,15 +267,15 @@
                 body: JSON.stringify(payload)
             });
             
-            status.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Registrato con successo!</span>';
+            status.innerHTML = "<span style='color:var(--success)'>✓ Costo registrato con successo!</span>";
             document.getElementById('erpForm').reset();
             document.getElementById('data').valueAsDate = new Date();
             document.getElementById('total').value = "€ 0,00";
-        } catch (error) {
-            status.innerHTML = '<span style="color: #ef4444;">Errore critico durante l\'invio.</span>';
+        } catch (err) {
+            status.innerHTML = "<span style='color:red'>Errore durante l'invio.</span>";
         } finally {
             btn.disabled = false;
-            setTimeout(() => { status.innerHTML = ""; }, 5000);
+            setTimeout(() => { status.innerHTML = ""; }, 4000);
         }
     };
 </script>
