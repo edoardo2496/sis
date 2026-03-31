@@ -3,166 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Edilcrema ERP | Industrial Costing</title>
+    <title>Edilcrema ERP | Multi-Entry</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #1a73e8; --dark: #1f2937; --bg: #f3f4f6; 
-            --success: #10b981; --border: #d1d5db; --text: #374151;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
-
-        .header { background: var(--dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 1.1rem; font-weight: 600; }
-        
-        .nav-tabs { display: flex; background: white; border-bottom: 1px solid var(--border); }
-        .nav-tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: #6b7280; transition: 0.3s; }
-        .nav-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: #f8fbff; }
-
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; width: 100%; flex-grow: 1; }
-
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
+        :root { --primary: #1a73e8; --dark: #1f2937; --bg: #f3f4f6; --success: #10b981; --border: #d1d5db; --text: #374151; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        .header { background: var(--dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
         .section-title { font-size: 0.85rem; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--bg); padding-bottom: 8px; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .full { grid-column: span 2; }
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .full { grid-column: span 1; } }
-
+        
+        .grid-header { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .field { margin-bottom: 15px; }
-        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; color: var(--dark); }
-        select, input, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 1rem; transition: 0.2s; background: #fff; color: var(--dark); }
-        select:focus, input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
-        
-        input[readonly] { background: #f9fafb; font-weight: bold; color: var(--primary); border-style: dashed; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; }
+        select, input, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
 
-        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; }
-        .btn-submit:active { transform: scale(0.98); }
-        .btn-submit:disabled { background: #9ca3af; }
-
-        #status { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 20px; }
+        /* Tabella Righe */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; font-size: 0.75rem; color: #6b7280; padding: 10px; border-bottom: 2px solid var(--bg); }
+        td { padding: 8px; vertical-align: top; }
+        .row-total { font-weight: bold; color: var(--primary); padding-top: 15px; display: block; }
         
-        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        .btn-add { background: #e8f0fe; color: var(--primary); border: 1px dashed var(--primary); padding: 10px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 600; margin-top: 10px; transition: 0.2s; }
+        .btn-add:hover { background: var(--primary); color: white; }
+        .btn-remove { color: #ef4444; cursor: pointer; padding-top: 15px; display: block; text-align: center; }
+        
+        .footer-summary { display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--bg); }
+        .grand-total { font-size: 1.4rem; font-weight: 800; color: var(--dark); }
+        
+        .btn-submit { width: 100%; padding: 16px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; }
+        
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loading-overlay">
-    <div class="spinner"></div>
-    <p id="loader-text">Connessione a Edilcrema Cloud...</p>
-</div>
+<div id="loader" class="loading-overlay"><div class="spinner"></div><p>Caricamento liste...</p></div>
 
 <div class="header">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-city"></i>
-        <h1>EDILCREMA <span style="font-weight: 300;">ERP</span></h1>
-    </div>
-    <div id="online-tag"><i class="fas fa-circle" style="color: var(--success); font-size: 10px;"></i> LIVE</div>
-</div>
-
-<div class="nav-tabs">
-    <div class="nav-tab active" id="tab-btn-input" onclick="switchTab('input')"><i class="fas fa-plus-circle"></i> Inserimento</div>
-    <div class="nav-tab" id="tab-btn-dash" onclick="switchTab('dash')"><i class="fas fa-chart-pie"></i> Dashboard</div>
+    <h1>EDILCREMA <span style="font-weight:300">ERP</span></h1>
+    <span><i class="fas fa-circle" style="color:var(--success); font-size:10px"></i> LIVE</span>
 </div>
 
 <div class="container">
-    <div id="tab-input">
-        <form id="erpForm">
-            <div class="card">
-                <div class="section-title"><i class="fas fa-info-circle"></i> Intestazione</div>
-                <div class="grid">
-                    <div class="field">
-                        <label>Data</label>
-                        <input type="date" id="data" required>
-                    </div>
-                    <div class="field">
-                        <label>Cantiere</label>
-                        <select id="cantiere" required>
-                            <option value="">Caricamento...</option>
-                        </select>
-                    </div>
-                    <div class="field full">
-                        <label>Fornitore</label>
-                        <input type="text" id="fornitore" list="fornitore_list" placeholder="Cerca fornitore..." required>
-                        <datalist id="fornitore_list"></datalist>
-                    </div>
+    <form id="erpForm">
+        <div class="card">
+            <div class="section-title"><i class="fas fa-file-invoice"></i> Intestazione Documento</div>
+            <div class="grid-header">
+                <div class="field">
+                    <label>Data</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="field">
+                    <label>Cantiere Target</label>
+                    <select id="cantiere" required><option value="">Caricamento...</option></select>
+                </div>
+                <div class="field" style="grid-column: span 2;">
+                    <label>Fornitore</label>
+                    <input type="text" id="fornitore" list="fornitore_list" placeholder="Cerca fornitore..." required>
+                    <datalist id="fornitore_list"></datalist>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="section-title"><i class="fas fa-layer-group"></i> Categoria Spesa</div>
-                <div class="grid">
-                    <div class="field">
-                        <label>Macro Categoria</label>
-                        <select id="macro" onchange="updateMicro()" required>
-                            <option value="">— Seleziona —</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Voce Micro</label>
-                        <input type="text" id="micro" list="micro_list" placeholder="Seleziona voce..." required>
-                        <datalist id="micro_list"></datalist>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="section-title"><i class="fas fa-euro-sign"></i> Dati Economici</div>
-                <div class="grid">
-                    <div class="field">
-                        <label>Quantità</label>
-                        <input type="number" id="qty" step="0.01" value="1.00" oninput="calcTotal()">
-                    </div>
-                    <div class="field">
-                        <label>Unità</label>
-                        <select id="unit">
-                            <option value="nr">nr</option>
-                            <option value="m">m</option>
-                            <option value="ml">ml</option>
-                            <option value="mq">mq</option>
-                            <option value="mc">mc</option>
-                            <option value="kg">kg</option>
-                            <option value="q">q</option>
-                            <option value="t">t</option>
-                            <option value="ore">ore</option>
-                            <option value="corpo">corpo</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Prezzo Unitario (€)</label>
-                        <input type="number" id="price" step="0.001" placeholder="0.00" oninput="calcTotal()" required>
-                    </div>
-                    <div class="field">
-                        <label>Totale</label>
-                        <input type="text" id="total" readonly value="€ 0,00">
-                    </div>
-                </div>
-                <div class="field full">
-                    <label>Note</label>
-                    <textarea id="note" rows="2" placeholder="Note extra..."></textarea>
-                </div>
-            </div>
-
-            <button type="submit" id="submitBtn" class="btn-submit">
-                <i class="fas fa-save"></i> SALVA NEL DATABASE
-            </button>
-            <div id="status"></div>
-        </form>
-    </div>
-
-    <div id="tab-dash" style="display:none;">
-        <div class="card" style="text-align: center; padding: 40px;">
-            <h3>Dashboard Attiva</h3>
-            <p>I dati verranno visualizzati qui una volta inseriti.</p>
         </div>
-    </div>
+
+        <div class="card">
+            <div class="section-title"><i class="fas fa-list"></i> Voci di Costo</div>
+            <div class="table-responsive">
+                <table id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Macro</th>
+                            <th style="width: 25%;">Micro / Materiale</th>
+                            <th style="width: 10%;">Qtà</th>
+                            <th style="width: 10%;">Unità</th>
+                            <th style="width: 15%;">Prezzo Unit.</th>
+                            <th style="width: 15%;">Totale</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
+            </div>
+            <button type="button" class="btn-add" onclick="addRow()">
+                <i class="fas fa-plus"></i> Aggiungi un'altra voce a questo ordine
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="field">
+                <label>Note Generali / Riferimento Documento</label>
+                <textarea id="note" rows="2" placeholder="Es: Fattura 123/2024 - Consegna in loco"></textarea>
+            </div>
+            <div class="footer-summary">
+                <span style="color:#6b7280; font-weight:600">TOTALE ORDINE:</span>
+                <span class="grand-total" id="grandTotalDisplay">€ 0,00</span>
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit">REGISTRA TUTTE LE VOCI</button>
+        <div id="status" style="text-align:center; margin-top:15px; font-weight:700"></div>
+    </form>
 </div>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgzPBU7EVwxZRfVt-Mhsth44NfIl2Dqi_iGSrQTT91poAjvdn_B7x420Tl1Y5LGLVX7A/exec";
-    
     let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
 
     window.onload = async () => {
@@ -171,82 +120,99 @@
             const response = await fetch(SCRIPT_URL);
             DATA_STORE = await response.json();
             
-            // Popola Cantieri
             const cSel = document.getElementById('cantiere');
             cSel.innerHTML = '<option value="">— Scegli —</option>';
-            DATA_STORE.cantieri.forEach(c => { if(c) cSel.add(new Option(c, c)); });
-
-            // Popola Macro
-            const mSel = document.getElementById('macro');
-            mSel.innerHTML = '<option value="">— Scegli —</option>';
-            Object.keys(DATA_STORE.mappatura).sort().forEach(m => mSel.add(new Option(m, m)));
-
-            // Popola Fornitori
-            document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori
-                .map(f => `<option value="${f}">`).join('');
+            DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
+            document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
             
+            addRow(); // Aggiunge la prima riga vuota
             document.getElementById('loader').style.display = 'none';
-        } catch (e) {
-            document.getElementById('loader-text').innerHTML = "<span style='color:red'>Errore connessione. Verifica la distribuzione.</span>";
-        }
+        } catch (e) { alert("Errore connessione database."); }
     };
 
-    function switchTab(tab) {
-        document.getElementById('tab-input').style.display = tab === 'input' ? 'block' : 'none';
-        document.getElementById('tab-dash').style.display = tab === 'dash' ? 'block' : 'none';
-        document.getElementById('tab-btn-input').classList.toggle('active', tab === 'input');
-        document.getElementById('tab-btn-dash').classList.toggle('active', tab === 'dash');
+    function addRow() {
+        const tbody = document.getElementById('tableBody');
+        const rowId = Date.now();
+        const tr = document.createElement('tr');
+        tr.id = `row-${rowId}`;
+        
+        let macroOptions = '<option value="">—</option>';
+        Object.keys(DATA_STORE.mappatura).sort().forEach(m => macroOptions += `<option value="${m}">${m}</option>`);
+
+        tr.innerHTML = `
+            <td><select class="m-macro" onchange="updateMicroOptions('${rowId}')" required>${macroOptions}</select></td>
+            <td><input type="text" class="m-micro" list="list-${rowId}" required><datalist id="list-${rowId}"></datalist></td>
+            <td><input type="number" class="m-qty" step="0.01" value="1" oninput="calculateRow('${rowId}')"></td>
+            <td><select class="m-unit"><option>nr</option><option>m</option><option>mq</option><option>mc</option><option>kg</option><option>ore</option><option>corpo</option></select></td>
+            <td><input type="number" class="m-price" step="0.001" placeholder="0.00" oninput="calculateRow('${rowId}')"></td>
+            <td><span class="row-total" id="total-${rowId}">€ 0,00</span></td>
+            <td><i class="fas fa-trash btn-remove" onclick="removeRow('${rowId}')"></i></td>
+        `;
+        tbody.appendChild(tr);
     }
 
-    function updateMicro() {
-        const macro = document.getElementById('macro').value;
-        const list = document.getElementById('micro_list');
-        list.innerHTML = "";
-        if(DATA_STORE.mappatura[macro]) {
-            DATA_STORE.mappatura[macro].forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m;
-                list.appendChild(opt);
-            });
+    function removeRow(id) {
+        const row = document.getElementById(`row-${id}`);
+        if (document.querySelectorAll('#tableBody tr').length > 1) {
+            row.remove();
+            updateGrandTotal();
         }
     }
 
-    function calcTotal() {
-        const q = parseFloat(document.getElementById('qty').value) || 0;
-        const p = parseFloat(document.getElementById('price').value) || 0;
-        document.getElementById('total').value = (q * p).toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
+    function updateMicroOptions(id) {
+        const macro = document.querySelector(`#row-${id} .m-macro`).value;
+        const datalist = document.getElementById(`list-${id}`);
+        datalist.innerHTML = (DATA_STORE.mappatura[macro] || []).map(m => `<option value="${m}">`).join('');
+    }
+
+    function calculateRow(id) {
+        const q = parseFloat(document.querySelector(`#row-${id} .m-qty`).value) || 0;
+        const p = parseFloat(document.querySelector(`#row-${id} .m-price`).value) || 0;
+        document.getElementById(`total-${id}`).innerText = (q * p).toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
+        updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+        let total = 0;
+        document.querySelectorAll('#tableBody tr').forEach(tr => {
+            const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
+            const p = parseFloat(tr.querySelector('.m-price').value) || 0;
+            total += (q * p);
+        });
+        document.getElementById('grandTotalDisplay').innerText = total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
     }
 
     document.getElementById('erpForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
-        document.getElementById('status').innerHTML = "Salvataggio...";
-
-        const payload = {
+        const status = document.getElementById('status');
+        
+        const commonData = {
             data: document.getElementById('data').value,
             cantiere: document.getElementById('cantiere').value,
-            macro: document.getElementById('macro').value,
-            micro: document.getElementById('micro').value,
             fornitore: document.getElementById('fornitore').value,
-            qty: document.getElementById('qty').value,
-            unit: document.getElementById('unit').value,
-            price: document.getElementById('price').value,
-            total: (parseFloat(document.getElementById('qty').value) * parseFloat(document.getElementById('price').value)).toFixed(2),
             note: document.getElementById('note').value
         };
 
-        try {
+        const rows = document.querySelectorAll('#tableBody tr');
+        status.innerHTML = `Invio di ${rows.length} voci in corso...`;
+
+        for (let tr of rows) {
+            const payload = {
+                ...commonData,
+                macro: tr.querySelector('.m-macro').value,
+                micro: tr.querySelector('.m-micro').value,
+                qty: tr.querySelector('.m-qty').value,
+                unit: tr.querySelector('.m-unit').value,
+                price: tr.querySelector('.m-price').value,
+                total: (parseFloat(tr.querySelector('.m-qty').value) * parseFloat(tr.querySelector('.m-price').value)).toFixed(2)
+            };
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            document.getElementById('status').innerHTML = "<span style='color:green'>✓ Salvato!</span>";
-            document.getElementById('erpForm').reset();
-            document.getElementById('data').valueAsDate = new Date();
-            document.getElementById('total').value = "€ 0,00";
-        } catch (err) {
-            document.getElementById('status').innerHTML = "Errore invio.";
-        } finally {
-            btn.disabled = false;
         }
+
+        status.innerHTML = "<span style='color:green'>✓ Tutte le voci sono state registrate!</span>";
+        setTimeout(() => location.reload(), 2000);
     };
 </script>
 </body>
