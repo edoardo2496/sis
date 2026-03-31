@@ -13,7 +13,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* Header */
         .header { background: var(--dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .header h1 { font-size: 1.1rem; font-weight: 600; }
         
@@ -23,7 +22,6 @@
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; width: 100%; flex-grow: 1; }
 
-        /* Form Card */
         .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
         .section-title { font-size: 0.85rem; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--bg); padding-bottom: 8px; }
 
@@ -44,7 +42,6 @@
 
         #status { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 20px; }
         
-        /* Loader */
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px; }
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -54,7 +51,7 @@
 
 <div id="loader" class="loading-overlay">
     <div class="spinner"></div>
-    <p id="loader-text">Sincronizzazione con Edilcrema Cloud...</p>
+    <p id="loader-text">Connessione a Edilcrema Cloud...</p>
 </div>
 
 <div class="header">
@@ -71,11 +68,10 @@
 </div>
 
 <div class="container">
-    
     <div id="tab-input">
         <form id="erpForm">
             <div class="card">
-                <div class="section-title"><i class="fas fa-info-circle"></i> Intestazione Ordine</div>
+                <div class="section-title"><i class="fas fa-info-circle"></i> Intestazione</div>
                 <div class="grid">
                     <div class="field">
                         <label>Data</label>
@@ -88,7 +84,7 @@
                         </select>
                     </div>
                     <div class="field full">
-                        <label>Fornitore / Risorsa</label>
+                        <label>Fornitore</label>
                         <input type="text" id="fornitore" list="fornitore_list" placeholder="Cerca fornitore..." required>
                         <datalist id="fornitore_list"></datalist>
                     </div>
@@ -96,7 +92,7 @@
             </div>
 
             <div class="card">
-                <div class="section-title"><i class="fas fa-layer-group"></i> Classificazione Costi</div>
+                <div class="section-title"><i class="fas fa-layer-group"></i> Categoria Spesa</div>
                 <div class="grid">
                     <div class="field">
                         <label>Macro Categoria</label>
@@ -105,7 +101,7 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label>Voce di Costo (Micro)</label>
+                        <label>Voce Micro</label>
                         <input type="text" id="micro" list="micro_list" placeholder="Seleziona voce..." required>
                         <datalist id="micro_list"></datalist>
                     </div>
@@ -113,25 +109,25 @@
             </div>
 
             <div class="card">
-                <div class="section-title"><i class="fas fa-euro-sign"></i> Analisi Economica</div>
+                <div class="section-title"><i class="fas fa-euro-sign"></i> Dati Economici</div>
                 <div class="grid">
                     <div class="field">
                         <label>Quantità</label>
                         <input type="number" id="qty" step="0.01" value="1.00" oninput="calcTotal()">
                     </div>
                     <div class="field">
-                        <label>Unità di Misura</label>
+                        <label>Unità</label>
                         <select id="unit">
-                            <option value="nr">nr (pezzi)</option>
-                            <option value="m">m (lineari)</option>
-                            <option value="ml">ml (lineari specifici)</option>
-                            <option value="mq">mq (metri quadri)</option>
-                            <option value="mc">mc (metri cubi)</option>
+                            <option value="nr">nr</option>
+                            <option value="m">m</option>
+                            <option value="ml">ml</option>
+                            <option value="mq">mq</option>
+                            <option value="mc">mc</option>
                             <option value="kg">kg</option>
-                            <option value="q">q (quintali)</option>
-                            <option value="t">t (tonnellate)</option>
+                            <option value="q">q</option>
+                            <option value="t">t</option>
                             <option value="ore">ore</option>
-                            <option value="corpo">a corpo</option>
+                            <option value="corpo">corpo</option>
                         </select>
                     </div>
                     <div class="field">
@@ -139,74 +135,59 @@
                         <input type="number" id="price" step="0.001" placeholder="0.00" oninput="calcTotal()" required>
                     </div>
                     <div class="field">
-                        <label>Totale Riga</label>
+                        <label>Totale</label>
                         <input type="text" id="total" readonly value="€ 0,00">
                     </div>
                 </div>
                 <div class="field full">
-                    <label>Note / Rif. Documento</label>
-                    <textarea id="note" rows="2" placeholder="Note aggiuntive o numero fattura/bolla..."></textarea>
+                    <label>Note</label>
+                    <textarea id="note" rows="2" placeholder="Note extra..."></textarea>
                 </div>
             </div>
 
             <button type="submit" id="submitBtn" class="btn-submit">
-                <i class="fas fa-save"></i> REGISTRA NEL SISTEMA
+                <i class="fas fa-save"></i> SALVA NEL DATABASE
             </button>
             <div id="status"></div>
         </form>
     </div>
 
     <div id="tab-dash" style="display:none;">
-        <div class="card" style="text-align: center; padding: 50px 20px;">
-            <i class="fas fa-chart-line fa-4x" style="color: var(--primary); margin-bottom: 20px;"></i>
-            <h3>Dashboard in Arrivo</h3>
-            <p style="margin-top: 10px; color: #6b7280;">Stiamo elaborando i dati del tuo foglio Google per mostrarti i grafici di cantiere.</p>
+        <div class="card" style="text-align: center; padding: 40px;">
+            <h3>Dashboard Attiva</h3>
+            <p>I dati verranno visualizzati qui una volta inseriti.</p>
         </div>
     </div>
 </div>
 
 <script>
-    // URL CONFIGURATO
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgzPBU7EVwxZRfVt-Mhsth44NfIl2Dqi_iGSrQTT91poAjvdn_B7x420Tl1Y5LGLVX7A/exec";
     
     let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
 
     window.onload = async () => {
         document.getElementById('data').valueAsDate = new Date();
-        const loader = document.getElementById('loader');
-        const loaderText = document.getElementById('loader-text');
-
         try {
-            console.log("Inizio fetch dati...");
             const response = await fetch(SCRIPT_URL);
-            
-            if (!response.ok) throw new Error("Errore risposta Google");
-            
             DATA_STORE = await response.json();
-            console.log("Dati caricati:", DATA_STORE);
-
+            
             // Popola Cantieri
             const cSel = document.getElementById('cantiere');
-            cSel.innerHTML = '<option value="">— Scegli Cantiere —</option>';
+            cSel.innerHTML = '<option value="">— Scegli —</option>';
             DATA_STORE.cantieri.forEach(c => { if(c) cSel.add(new Option(c, c)); });
 
             // Popola Macro
             const mSel = document.getElementById('macro');
-            mSel.innerHTML = '<option value="">— Seleziona Macro —</option>';
-            Object.keys(DATA_STORE.mappatura).sort().forEach(m => {
-                mSel.add(new Option(m, m));
-            });
+            mSel.innerHTML = '<option value="">— Scegli —</option>';
+            Object.keys(DATA_STORE.mappatura).sort().forEach(m => mSel.add(new Option(m, m)));
 
             // Popola Fornitori
             document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori
-                .filter(f => f)
                 .map(f => `<option value="${f}">`).join('');
             
-            loader.style.display = 'none';
-
-        } catch (error) {
-            console.error("Errore Caricamento:", error);
-            loaderText.innerHTML = "<span style='color:red'>Errore di connessione!<br>Controlla che i fogli su Google siano nominati correttamente.</span>";
+            document.getElementById('loader').style.display = 'none';
+        } catch (e) {
+            document.getElementById('loader-text').innerHTML = "<span style='color:red'>Errore connessione. Verifica la distribuzione.</span>";
         }
     };
 
@@ -220,9 +201,7 @@
     function updateMicro() {
         const macro = document.getElementById('macro').value;
         const list = document.getElementById('micro_list');
-        const microInput = document.getElementById('micro');
-        list.innerHTML = ""; microInput.value = "";
-        
+        list.innerHTML = "";
         if(DATA_STORE.mappatura[macro]) {
             DATA_STORE.mappatura[macro].forEach(m => {
                 const opt = document.createElement('option');
@@ -235,17 +214,14 @@
     function calcTotal() {
         const q = parseFloat(document.getElementById('qty').value) || 0;
         const p = parseFloat(document.getElementById('price').value) || 0;
-        const tot = q * p;
-        document.getElementById('total').value = tot.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
+        document.getElementById('total').value = (q * p).toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
     }
 
     document.getElementById('erpForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('status');
-        
         btn.disabled = true;
-        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrazione in corso...';
+        document.getElementById('status').innerHTML = "Salvataggio...";
 
         const payload = {
             data: document.getElementById('data').value,
@@ -261,21 +237,15 @@
         };
 
         try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(payload)
-            });
-            
-            status.innerHTML = "<span style='color:var(--success)'>✓ Costo registrato con successo!</span>";
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            document.getElementById('status').innerHTML = "<span style='color:green'>✓ Salvato!</span>";
             document.getElementById('erpForm').reset();
             document.getElementById('data').valueAsDate = new Date();
             document.getElementById('total').value = "€ 0,00";
         } catch (err) {
-            status.innerHTML = "<span style='color:red'>Errore durante l'invio.</span>";
+            document.getElementById('status').innerHTML = "Errore invio.";
         } finally {
             btn.disabled = false;
-            setTimeout(() => { status.innerHTML = ""; }, 4000);
         }
     };
 </script>
