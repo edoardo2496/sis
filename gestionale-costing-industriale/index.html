@@ -2,189 +2,235 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Edilcrema ERP | Industrial Costing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --sidebar-width: 260px;
-            --primary: #1a73e8;
-            --dark-bg: #1f2937;
-            --light-bg: #f9fafb;
-            --border: #e5e7eb;
-            --success: #10b981;
-            --danger: #ef4444;
+            --primary: #1a73e8; --dark: #1f2937; --bg: #f3f4f6; 
+            --success: #10b981; --border: #d1d5db; --text: #374151;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--light-bg); display: flex; min-height: 100vh; }
+        /* Header */
+        .header { background: var(--dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: 1px; }
+        .header i { font-size: 1.4rem; color: var(--primary); }
 
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--dark-bg);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100%;
-        }
-
-        .sidebar-header { padding: 20px; font-weight: bold; font-size: 20px; border-bottom: 1px solid #374151; }
-        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-        .nav-item:hover { background: #374151; }
-        .nav-item.active { background: var(--primary); }
-
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex-grow: 1;
-            padding: 30px;
-        }
-
-        /* Dashboard KPI Cards */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-left: 5px solid var(--primary);
-        }
-
-        .kpi-label { color: #6b7280; font-size: 12px; text-transform: uppercase; }
-        .kpi-value { font-size: 24px; font-weight: bold; margin-top: 5px; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; width: 100%; }
 
         /* Form Card */
-        .glass-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
-        }
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
+        .section-title { font-size: 0.9rem; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full-width { grid-column: span 2; }
+        /* Layout Grids */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full { grid-column: span 2; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .full { grid-column: span 1; } }
 
-        label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-        select, input, textarea {
-            width: 100%; padding: 10px; border: 1px solid var(--border);
-            border-radius: 6px; font-size: 14px;
-        }
+        /* Inputs */
+        .field { margin-bottom: 18px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--dark); }
+        select, input, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 1rem; color: var(--dark); transition: all 0.2s; }
+        select:focus, input:focus { border-color: var(--primary); outline: none; background: #f8fbff; }
+        
+        input[readonly] { background: #f9fafb; font-weight: bold; color: var(--primary); border-style: dashed; }
 
-        .btn-submit {
-            background: var(--primary); color: white; padding: 12px 24px;
-            border: none; border-radius: 6px; font-weight: 600; cursor: pointer;
-            margin-top: 20px; width: 100%;
-        }
+        /* Buttons */
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; margin-top: 10px; }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { background: #9ca3af; }
 
-        .section-title { margin-bottom: 20px; font-size: 18px; color: #111827; }
+        /* Status & Loaders */
+        #status { text-align: center; margin-top: 15px; font-weight: 600; min-height: 24px; }
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="sidebar-header">Edilcrema ERP</div>
-    <div class="nav-item active" onclick="showSection('input-panel')">
-        <i class="fas fa-plus-circle"></i> Inserimento Costi
+<div id="loader" class="loading-overlay"><i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary);"></i></div>
+
+<div class="header">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-hard-hat"></i>
+        <h1>EDILCREMA <span style="font-weight: 300;">COSTING</span></h1>
     </div>
-    <div class="nav-item" onclick="showSection('dashboard-panel')">
-        <i class="fas fa-chart-line"></i> Dashboard KPI
-    </div>
-    <div class="nav-item" onclick="showSection('history-panel')">
-        <i class="fas fa-list"></i> Storico Recente
-    </div>
+    <div id="conn-status"><i class="fas fa-circle" style="font-size: 10px; color: #10b981;"></i></div>
 </div>
 
-<div class="main-content">
-    
-    <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">Totale Speso (Mese)</div>
-            <div class="kpi-value" id="kpi-speso">€ 14.250</div>
-        </div>
-        <div class="kpi-card" style="border-left-color: var(--success);">
-            <div class="kpi-label">Budget Residuo</div>
-            <div class="kpi-value">72%</div>
-        </div>
-        <div class="kpi-card" style="border-left-color: var(--danger);">
-            <div class="kpi-label">Allerta Costi</div>
-            <div class="kpi-value">02</div>
-        </div>
-    </div>
-
-    <div id="input-panel" class="section">
-        <div class="glass-card">
-            <h3 class="section-title">Registrazione Costo Cantiere</h3>
-            <form id="erpForm">
-                <div class="form-grid">
-                    <div class="field">
-                        <label>Data Competenza</label>
-                        <input type="date" id="data" required>
-                    </div>
-                    <div class="field">
-                        <label>Cantiere</label>
-                        <select id="cantiere" required>
-                            <option>Cantiere A - Milano</option>
-                            <option>Cantiere B - Crema</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Macro Categoria</label>
-                        <select id="macro" onchange="loadMicro()">
-                            <option>Materie prime</option>
-                            <option>Costo del Personale</option>
-                            <option>Carburanti</option>
-                            </select>
-                    </div>
-                    <div class="field">
-                        <label>Micro Categoria</label>
-                        <input type="text" id="micro" list="micro-list">
-                        <datalist id="micro-list"></datalist>
-                    </div>
-                    <div class="field">
-                        <label>Quantità</label>
-                        <input type="number" id="qty" step="0.01">
-                    </div>
-                    <div class="field">
-                        <label>Prezzo Unitario (€)</label>
-                        <input type="number" id="price" step="0.01">
-                    </div>
-                    <div class="field full-width">
-                        <label>Note / Dettagli Fornitore</label>
-                        <textarea id="note" rows="2"></textarea>
-                    </div>
+<div class="container">
+    <form id="erpForm">
+        
+        <div class="card">
+            <div class="section-title"><i class="fas fa-map-marker-alt"></i> Localizzazione & Tempo</div>
+            <div class="grid">
+                <div class="field">
+                    <label>Data Registrazione</label>
+                    <input type="date" id="data" required>
                 </div>
-                <button type="submit" class="btn-submit">Registra nel Sistema</button>
-            </form>
+                <div class="field">
+                    <label>Cantiere Target</label>
+                    <select id="cantiere" required>
+                        <option value="">Caricamento cantieri...</option>
+                    </select>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div id="dashboard-panel" class="section" style="display:none">
-        <div class="glass-card">
-            <h3 class="section-title">Analisi Andamento</h3>
-            <p>Qui inseriremo i grafici di Google Charts o Chart.js per vedere le torte dei costi.</p>
+        <div class="card">
+            <div class="section-title"><i class="fas fa-tags"></i> Classificazione Industriale</div>
+            <div class="grid">
+                <div class="field">
+                    <label>Macro Categoria</label>
+                    <select id="macro" onchange="updateMicro()" required>
+                        <option value="">— Seleziona —</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Micro Categoria / Voce</label>
+                    <input type="text" id="micro" list="micro_list" placeholder="Cerca voce..." required>
+                    <datalist id="micro_list"></datalist>
+                </div>
+                <div class="field full">
+                    <label>Fornitore / Risorsa</label>
+                    <input type="text" id="fornitore" list="fornitore_list" placeholder="Inizia a scrivere per cercare..." required>
+                    <datalist id="fornitore_list"></datalist>
+                </div>
+            </div>
         </div>
-    </div>
 
+        <div class="card">
+            <div class="section-title"><i class="fas fa-calculator"></i> Dati Quantitativi & Valore</div>
+            <div class="grid">
+                <div class="field">
+                    <label>Quantità</label>
+                    <input type="number" id="qty" step="0.01" value="1.00" oninput="calcTotal()">
+                </div>
+                <div class="field">
+                    <label>Unità Misura</label>
+                    <select id="unit">
+                        <option>n°</option><option>mc</option><option>mq</option><option>kg</option><option>t</option><option>ore</option><option>litri</option><option>corpo</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Prezzo Unitario (€)</label>
+                    <input type="number" id="price" step="0.001" placeholder="0.00" oninput="calcTotal()" required>
+                </div>
+                <div class="field">
+                    <label>TOTALE RIGA</label>
+                    <input type="text" id="total" readonly value="€ 0,00">
+                </div>
+            </div>
+            <div class="field full">
+                <label>Note Interne / Riferimento Documento</label>
+                <textarea id="note" rows="2" placeholder="Es: Fattura n. 12 del 20/03 o nota tecnica..."></textarea>
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit">
+            <i class="fas fa-cloud-upload-alt"></i> REGISTRA NEL SISTEMA
+        </button>
+        <div id="status"></div>
+    </form>
 </div>
 
 <script>
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-    }
+    // URL DISTRIBUZIONE GOOGLE APPS SCRIPT
+    const SCRIPT_URL = "INCOLLA_QUI_IL_TUO_URL_APPS_SCRIPT";
     
-    // Qui andrà la logica JS per popolare le micro-categorie e gestire l'invio
+    let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
+
+    window.onload = async () => {
+        document.getElementById('data').valueAsDate = new Date();
+        const loader = document.getElementById('loader');
+
+        try {
+            const response = await fetch(SCRIPT_URL);
+            DATA_STORE = await response.json();
+            
+            // Popola Cantieri
+            const cSel = document.getElementById('cantiere');
+            cSel.innerHTML = '<option value="">— Scegli Cantiere —</option>';
+            DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
+
+            // Popola Macro
+            const mSel = document.getElementById('macro');
+            Object.keys(DATA_STORE.mappatura).sort().forEach(m => mSel.add(new Option(m, m)));
+
+            // Popola Fornitori
+            document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
+            
+            loader.style.display = 'none';
+        } catch (error) {
+            console.error("Errore inizializzazione:", error);
+            alert("Errore di connessione al database!");
+        }
+    };
+
+    function updateMicro() {
+        const macro = document.getElementById('macro').value;
+        const list = document.getElementById('micro_list');
+        const microInput = document.getElementById('micro');
+        
+        list.innerHTML = "";
+        microInput.value = "";
+        
+        if(DATA_STORE.mappatura[macro]) {
+            DATA_STORE.mappatura[macro].forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                list.appendChild(opt);
+            });
+        }
+    }
+
+    function calcTotal() {
+        const q = parseFloat(document.getElementById('qty').value) || 0;
+        const p = parseFloat(document.getElementById('price').value) || 0;
+        const tot = q * p;
+        document.getElementById('total').value = tot.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
+    }
+
+    document.getElementById('erpForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        status.innerHTML = '<i class="fas fa-sync fa-spin"></i> Comunicazione con Google Sheets...';
+
+        const payload = {
+            data: document.getElementById('data').value,
+            cantiere: document.getElementById('cantiere').value,
+            macro: document.getElementById('macro').value,
+            micro: document.getElementById('micro').value,
+            fornitore: document.getElementById('fornitore').value,
+            qty: document.getElementById('qty').value,
+            unit: document.getElementById('unit').value,
+            price: document.getElementById('price').value,
+            total: (parseFloat(document.getElementById('qty').value) * parseFloat(document.getElementById('price').value)).toFixed(2),
+            note: document.getElementById('note').value
+        };
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+            
+            status.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Registrato con successo!</span>';
+            document.getElementById('erpForm').reset();
+            document.getElementById('data').valueAsDate = new Date();
+            document.getElementById('total').value = "€ 0,00";
+        } catch (error) {
+            status.innerHTML = '<span style="color: #ef4444;">Errore critico durante l\'invio.</span>';
+        } finally {
+            btn.disabled = false;
+            setTimeout(() => { status.innerHTML = ""; }, 5000);
+        }
+    };
 </script>
 </body>
 </html>
