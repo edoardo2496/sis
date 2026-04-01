@@ -6,35 +6,48 @@
     <title>Edilcrema ERP | Precision Costing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #1a73e8; --dark: #1f2937; --bg: #f3f4f6; --success: #10b981; --border: #d1d5db; --text: #374151; }
+        :root { --primary: #1a73e8; --dark: #1f2937; --bg: #f3f4f6; --success: #10b981; --border: #d1d5db; --text: #374151; --danger: #ef4444; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; } /* Spazio per bottone fisso */
+        
         .header { background: var(--dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
+        .container { max-width: 1200px; margin: 10px auto; padding: 0 10px; }
+        
+        .card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 15px; }
         .section-title { font-size: 0.85rem; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--bg); padding-bottom: 8px; }
         
-        .grid-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; }
-        select, input, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+        /* Layout Intestazione */
+        .grid-header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; color: #4b5563; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 16px; /* Evita zoom su iOS */ background: white; }
 
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { text-align: left; font-size: 0.7rem; color: #6b7280; padding: 10px; text-transform: uppercase; }
-        td { padding: 5px; vertical-align: middle; }
+        /* Tabella Responsiva (Card su Mobile) */
+        .table-responsive { width: 100%; }
+        table { width: 100%; border-collapse: collapse; }
         
-        /* Input specifici per riga */
-        .m-price { font-family: monospace; font-weight: 600; }
-        .row-total { font-weight: bold; color: var(--primary); font-family: monospace; }
-        
-        .btn-add { background: #fff; color: var(--primary); border: 1.5px solid var(--primary); padding: 10px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 700; margin-top: 15px; transition: 0.2s; }
-        .btn-add:hover { background: var(--primary); color: white; }
-        .btn-remove { color: #ef4444; cursor: pointer; text-align: center; }
-        
-        .footer-summary { display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-top: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid var(--border); }
-        .grand-total { font-size: 1.5rem; font-weight: 800; color: var(--dark); font-family: monospace; }
-        
-        .btn-submit { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        @media (min-width: 769px) {
+            th { text-align: left; font-size: 0.7rem; color: #6b7280; padding: 10px; text-transform: uppercase; border-bottom: 2px solid var(--bg); }
+            td { padding: 8px 5px; vertical-align: middle; border-bottom: 1px solid var(--bg); }
+        }
+
+        @media (max-width: 768px) {
+            .grid-header { grid-template-columns: 1fr; }
+            thead { display: none; } /* Nascondi testata tabella */
+            tr { display: block; background: #f9fafb; border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 15px; position: relative; }
+            td { display: block; width: 100% !important; padding: 5px 0; border: none; }
+            td::before { content: attr(data-label); font-size: 0.7rem; font-weight: 800; color: #9ca3af; text-transform: uppercase; display: block; margin-bottom: 2px; }
+            .btn-remove { position: absolute; top: 10px; right: 10px; font-size: 1.5rem; }
+        }
+
+        /* Stili per Righe */
+        .row-total { font-weight: bold; color: var(--primary); font-family: monospace; font-size: 1.1rem; }
+        .btn-add { background: #fff; color: var(--primary); border: 2px dashed var(--primary); padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 700; margin-top: 10px; }
+        .btn-remove { color: var(--danger); cursor: pointer; }
+
+        /* Footer e Submit */
+        .footer-summary { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-top: 2px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .grand-total { font-size: 1.3rem; font-weight: 800; font-family: monospace; }
+        .btn-submit { background: var(--success); color: white; border: none; border-radius: 8px; padding: 12px 25px; font-weight: 800; cursor: pointer; }
 
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -47,7 +60,7 @@
 
 <div class="header">
     <h1>EDILCREMA <span style="font-weight:300">ERP</span></h1>
-    <span><i class="fas fa-check-double"></i> Industrial Costing Mode</span>
+    <span style="font-size: 0.7rem;"><i class="fas fa-mobile-alt"></i> Mobile Ready</span>
 </div>
 
 <div class="container">
@@ -60,50 +73,49 @@
                     <input type="date" id="data" required>
                 </div>
                 <div>
-                    <label>Cantiere</label>
+                    <label>Cantiere di Riferimento</label>
                     <select id="cantiere" required><option value="">Caricamento...</option></select>
-                </div>
-                <div>
-                    <label>Fornitore Principale</label>
-                    <input type="text" id="fornitore" list="fornitore_list" placeholder="Ragione Sociale..." required>
-                    <datalist id="fornitore_list"></datalist>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <div class="section-title"><i class="fas fa-table"></i> Dettaglio Voci di Costo</div>
+            <div class="section-title"><i class="fas fa-table"></i> Voci di Costo (Fornitori multipli)</div>
             <div class="table-responsive">
                 <table id="itemsTable">
                     <thead>
                         <tr>
+                            <th style="width: 18%;">Fornitore</th>
                             <th style="width: 15%;">Macro</th>
-                            <th style="width: 20%;">Micro / Materiale</th>
+                            <th style="width: 18%;">Micro / Materiale</th>
                             <th style="width: 8%;">Qtà</th>
-                            <th style="width: 8%;">Unità</th>
-                            <th style="width: 12%;">Prezzo Unit. (€)</th>
-                            <th style="width: 22%;">Note Voce</th>
+                            <th style="width: 10%;">Prezzo (€)</th>
+                            <th style="width: 20%;">Note / DDT</th>
                             <th style="width: 10%;">Totale</th>
-                            <th style="width: 5%;"></th>
+                            <th style="width: 1%;"></th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
             <button type="button" class="btn-add" onclick="addRow()">
-                <i class="fas fa-plus-circle"></i> AGGIUNGI RIGA AL DOCUMENTO
+                <i class="fas fa-plus-circle"></i> AGGIUNGI NUOVA VOCE
             </button>
         </div>
 
-        <div class="footer-summary">
-            <span style="font-weight:700; color:#6b7280">TOTALE COMPLESSIVO:</span>
-            <span class="grand-total" id="grandTotalDisplay">€ 0.00000</span>
-        </div>
-
-        <button type="submit" id="submitBtn" class="btn-submit">REGISTRA MOVIMENTI</button>
         <div id="status" style="text-align:center; margin-top:15px; font-weight:700"></div>
+
+        <div class="footer-summary">
+            <div>
+                <span style="display:block; font-size:0.7rem; color:#6b7280">TOTALE</span>
+                <span class="grand-total" id="grandTotalDisplay">€ 0.00</span>
+            </div>
+            <button type="submit" id="submitBtn" class="btn-submit">REGISTRA</button>
+        </div>
     </form>
 </div>
+
+<datalist id="fornitore_list"></datalist>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgzPBU7EVwxZRfVt-Mhsth44NfIl2Dqi_iGSrQTT91poAjvdn_B7x420Tl1Y5LGLVX7A/exec";
@@ -118,11 +130,13 @@
             const cSel = document.getElementById('cantiere');
             cSel.innerHTML = '<option value="">— Seleziona Cantiere —</option>';
             DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
+            
+            // Popola datalist per auto-completamento fornitori
             document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
             
             addRow(); 
             document.getElementById('loader').style.display = 'none';
-        } catch (e) { alert("Errore di connessione. Controlla lo script URL."); }
+        } catch (e) { alert("Errore caricamento parametri."); }
     };
 
     function addRow() {
@@ -131,18 +145,18 @@
         const tr = document.createElement('tr');
         tr.id = `row-${rowId}`;
         
-        let macroOpts = '<option value="">—</option>';
+        let macroOpts = '<option value="">— Macro —</option>';
         Object.keys(DATA_STORE.mappatura).sort().forEach(m => macroOpts += `<option value="${m}">${m}</option>`);
 
         tr.innerHTML = `
-            <td><select class="m-macro" onchange="updateMicroOptions('${rowId}')" required>${macroOpts}</select></td>
-            <td><input type="text" class="m-micro" list="list-${rowId}" required><datalist id="list-${rowId}"></datalist></td>
-            <td><input type="number" class="m-qty" step="0.00001" value="1.00000" oninput="calculateRow('${rowId}')"></td>
-            <td><select class="m-unit"><option>nr</option><option>m</option><option>ml</option><option>mq</option><option>mc</option><option>kg</option><option>q</option><option>t</option><option>ore</option><option>corpo</option></select></td>
-            <td><input type="number" class="m-price" step="0.00001" placeholder="0.00000" oninput="calculateRow('${rowId}')" required></td>
-            <td><input type="text" class="m-note-row" placeholder="Note specifiche riga..."></td>
-            <td><span class="row-total" id="total-${rowId}">0.00000</span></td>
-            <td><i class="fas fa-times-circle btn-remove" onclick="removeRow('${rowId}')"></i></td>
+            <td data-label="Fornitore"><input type="text" class="m-fornitore" list="fornitore_list" placeholder="Fornitore riga..." required></td>
+            <td data-label="Macro Categoria"><select class="m-macro" onchange="updateMicroOptions('${rowId}')" required>${macroOpts}</select></td>
+            <td data-label="Materiale / Micro"><input type="text" class="m-micro" list="list-${rowId}" placeholder="Micro..." required><datalist id="list-${rowId}"></datalist></td>
+            <td data-label="Quantità"><input type="number" class="m-qty" step="0.0001" value="1.0000" oninput="calculateRow('${rowId}')"></td>
+            <td data-label="Prezzo Unitario (€)"><input type="number" class="m-price" step="0.0001" placeholder="0.00" oninput="calculateRow('${rowId}')" required></td>
+            <td data-label="Note specifiche"><input type="text" class="m-note-row" placeholder="es. DDT 123..."></td>
+            <td data-label="Totale Voce"><span class="row-total" id="total-${rowId}">0.00</span></td>
+            <td><i class="fas fa-trash-alt btn-remove" onclick="removeRow('${rowId}')"></i></td>
         `;
         tbody.appendChild(tr);
     }
@@ -163,8 +177,7 @@
     function calculateRow(id) {
         const q = parseFloat(document.querySelector(`#row-${id} .m-qty`).value) || 0;
         const p = parseFloat(document.querySelector(`#row-${id} .m-price`).value) || 0;
-        const total = (q * p).toFixed(5);
-        document.getElementById(`total-${id}`).innerText = total;
+        document.getElementById(`total-${id}`).innerText = (q * p).toFixed(2);
         updateGrandTotal();
     }
 
@@ -175,44 +188,41 @@
             const p = parseFloat(tr.querySelector('.m-price').value) || 0;
             total += (q * p);
         });
-        document.getElementById('grandTotalDisplay').innerText = '€ ' + total.toFixed(5);
+        document.getElementById('grandTotalDisplay').innerText = '€ ' + total.toFixed(2);
     }
 
     document.getElementById('erpForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.disabled = true;
         const status = document.getElementById('status');
+        btn.disabled = true;
         
-        const headerData = {
-            data: document.getElementById('data').value,
-            cantiere: document.getElementById('cantiere').value,
-            fornitore: document.getElementById('fornitore').value
-        };
-
+        const dataDoc = document.getElementById('data').value;
+        const cantiereDoc = document.getElementById('cantiere').value;
         const rows = document.querySelectorAll('#tableBody tr');
-        status.innerHTML = `<i class="fas fa-sync fa-spin"></i> Registrazione di ${rows.length} movimenti...`;
+        
+        status.innerHTML = `<i class="fas fa-sync fa-spin"></i> Registrazione movimenti...`;
 
         for (let tr of rows) {
             const payload = {
-                ...headerData,
+                data: dataDoc,
+                cantiere: cantiereDoc,
+                fornitore: tr.querySelector('.m-fornitore').value,
                 macro: tr.querySelector('.m-macro').value,
                 micro: tr.querySelector('.m-micro').value,
                 qty: tr.querySelector('.m-qty').value,
-                unit: tr.querySelector('.m-unit').value,
+                unit: "nr", // Default o aggiungi select se serve
                 price: tr.querySelector('.m-price').value,
                 total: (parseFloat(tr.querySelector('.m-qty').value) * parseFloat(tr.querySelector('.m-price').value)).toFixed(5),
-                note: tr.querySelector('.m-note-row').value // Nota specifica per riga
+                note: tr.querySelector('.m-note-row').value
             };
             
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            } catch (err) {
-                console.error("Errore riga:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        status.innerHTML = "<span style='color:green'>✓ DATABASE AGGIORNATO CORRETTAMENTE!</span>";
+        status.innerHTML = "<span style='color:green'>✓ INVIO COMPLETATO!</span>";
         setTimeout(() => location.reload(), 1500);
     };
 </script>
