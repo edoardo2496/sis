@@ -56,7 +56,7 @@
 </head>
 <body>
 
-<div id="loader" class="loading-overlay"><div class="spinner"></div><p>Sincronizzazione Edilcrema...</p></div>
+<div id="loader" class="loading-overlay"><div class="spinner"></div><p id="loaderText">Sincronizzazione Edilcrema...</p></div>
 
 <div class="header">
     <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -84,7 +84,7 @@
         <div class="card">
             <div class="section-title"><i class="fas fa-boxes"></i> Voci di costo</div>
             <div style="overflow-x:auto;">
-                <table>
+                <table id="mainTable">
                     <thead>
                         <tr>
                             <th style="width:14%">Fornitore</th>
@@ -118,28 +118,57 @@
 <datalist id="fornitore_list"></datalist>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgzPBU7EVwxZRfVt-Mhsth44NfIl2Dqi_iGSrQTT91poAjvdn_B7x420Tl1Y5LGLVX7A/exec";
+    // --- CONFIGURAZIONE ---
+    const SCRIPT_URL = "INSERISCI_QUI_IL_NUOVO_URL_DELLA_DISTRIBUZIONE";
     let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
 
     window.onload = async () => {
         document.getElementById('data').valueAsDate = new Date();
+        const loaderText = document.getElementById('loaderText');
+        
         try {
+            console.log("Inizio caricamento dati da Google...");
             const res = await fetch(SCRIPT_URL);
+            
+            if (!res.ok) throw new Error("Risposta del server non valida");
+            
             DATA_STORE = await res.json();
+            console.log("Dati caricati con successo:", DATA_STORE);
+
+            // Popolamento Cantieri
             const cSel = document.getElementById('cantiere');
-            DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
-            document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
+            if (DATA_STORE.cantieri && DATA_STORE.cantieri.length > 0) {
+                DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
+            } else {
+                console.warn("Nessun cantiere trovato nel database.");
+            }
+
+            // Popolamento Fornitori (Datalist)
+            if (DATA_STORE.fornitori) {
+                document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
+            }
+
             addRow();
             document.getElementById('loader').style.display = 'none';
-        } catch (e) { alert("Errore database!"); }
+        } catch (e) { 
+            console.error("Errore fatale:", e);
+            loaderText.innerHTML = "<span style='color:red'>Errore di connessione!<br>Verifica l'URL dello script e i permessi.</span>";
+            alert("Impossibile caricare i dati. Controlla la console (F12)."); 
+        }
     };
 
     function addRow() {
         const id = Date.now();
         const tr = document.createElement('tr');
         tr.id = `row-${id}`;
+        
+        // Genera opzioni Macro
         let mOpts = '<option value="">— Macro —</option>';
-        Object.keys(DATA_STORE.mappatura).sort().forEach(m => mOpts += `<option value="${m}">${m}</option>`);
+        if (DATA_STORE.mappatura) {
+            Object.keys(DATA_STORE.mappatura).sort().forEach(m => {
+                mOpts += `<option value="${m}">${m}</option>`;
+            });
+        }
 
         tr.innerHTML = `
             <td><input type="text" class="m-fornitore" list="fornitore_list" placeholder="Fornitore..." required></td>
@@ -149,14 +178,25 @@
             <td><input type="number" class="m-qty" step="0.00001" value="1.00000" oninput="calc()"></td>
             <td><input type="number" class="m-price" step="0.00001" placeholder="0.00000" oninput="calc()" required></td>
             <td><input type="text" class="m-note" placeholder="DDT..."></td>
-            <td><i class="fas fa-trash-alt btn-remove" onclick="document.getElementById('row-${id}').remove();calc()"></i></td>
+            <td><i class="fas fa-trash-alt btn-remove" onclick="removeRow('${id}')"></i></td>
         `;
         document.getElementById('tableBody').appendChild(tr);
     }
 
+    function removeRow(id) {
+        const row = document.getElementById(`row-${id}`);
+        if (row) row.remove();
+        calc();
+    }
+
     function updateMicro(id) {
         const m = document.querySelector(`#row-${id} .m-macro`).value;
-        document.getElementById(`list-${id}`).innerHTML = (DATA_STORE.mappatura[m] || []).map(x => `<option value="${x}">`).join('');
+        const list = document.getElementById(`list-${id}`);
+        if (DATA_STORE.mappatura && DATA_STORE.mappatura[m]) {
+            list.innerHTML = DATA_STORE.mappatura[m].map(x => `<option value="${x}">`).join('');
+        } else {
+            list.innerHTML = "";
+        }
     }
 
     function calc() {
@@ -173,17 +213,24 @@
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('statusMsg');
-        btn.disabled = true; msg.innerHTML = "Inviando...";
+        
+        btn.disabled = true; 
+        msg.style.color = "orange";
+        msg.innerHTML = "Invio in corso... non chiudere la pagina.";
 
         try {
             const rows = document.querySelectorAll('#tableBody tr');
+            const dataBase = {
+                data: document.getElementById('data').value,
+                cantiere: document.getElementById('cantiere').value,
+                status: document.getElementById('docStatus').value
+            };
+
             for (let tr of rows) {
                 const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
                 const p = parseFloat(tr.querySelector('.m-price').value) || 0;
                 const payload = {
-                    data: document.getElementById('data').value,
-                    cantiere: document.getElementById('cantiere').value,
-                    status: document.getElementById('docStatus').value,
+                    ...dataBase,
                     fornitore: tr.querySelector('.m-fornitore').value,
                     macro: tr.querySelector('.m-macro').value,
                     micro: tr.querySelector('.m-micro').value,
@@ -193,11 +240,23 @@
                     total: (q * p).toFixed(5),
                     note: tr.querySelector('.m-note').value
                 };
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(payload) 
+                });
             }
-            msg.innerHTML = "OK!";
-            setTimeout(() => location.reload(), 1000);
-        } catch (err) { msg.innerHTML = "Errore!"; btn.disabled = false; }
+            
+            msg.style.color = "green";
+            msg.innerHTML = "REGISTRAZIONE COMPLETATA!";
+            setTimeout(() => location.reload(), 1500);
+        } catch (err) { 
+            console.error("Errore invio:", err);
+            msg.style.color = "red";
+            msg.innerHTML = "ERRORE DURANTE L'INVIO!"; 
+            btn.disabled = false; 
+        }
     };
 </script>
 </body>
