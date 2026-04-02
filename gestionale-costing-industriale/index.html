@@ -6,193 +6,49 @@
     <title>Edilcrema ERP | Precision Costing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #2196c4;
-            --bg: #f5f5f0;
-            --border: #e8e8e8;
-            --text: #1a1a1a;
-            --text-light: #888;
-        }
+        :root { --primary: #2196c4; --bg: #f5f5f0; --border: #e8e8e8; --text: #1a1a1a; --text-light: #888; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); padding-bottom: 100px; min-height: 100vh; }
-
-        .header {
-            background: #2196c4;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .header img {
-            height: 44px;
-            width: 44px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .header-text { display: flex; flex-direction: column; }
-        .header-title { color: #fff; font-size: 17px; font-weight: 600; line-height: 1.2; }
-        .header-sub { color: rgba(255,255,255,0.75); font-size: 12px; margin-top: 2px; }
-
-        .app { max-width: 1000px; margin: 0 auto; padding: 1rem; }
-
-        .card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .section-title {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--primary);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 0.5px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 6px;
-            margin-top: 14px;
-        }
-        label:first-child { margin-top: 0; }
-
-        select, input[type=text], input[type=date], input[type=number] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-            background: #fff;
-            color: var(--text);
-            font-family: inherit;
-        }
-        select:focus, input:focus { outline: none; border-color: var(--primary); }
-
-        input[type=number].m-qty, 
-        input[type=number].m-price {
-            min-width: 80px;
-            text-align: center;
-            font-weight: 600;
-            background-color: #f9fdff;
-        }
-
-        .grid-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th {
-            text-align: left;
-            font-size: 11px;
-            color: var(--text-light);
-            padding: 8px 5px;
-            text-transform: uppercase;
-            border-bottom: 0.5px solid var(--border);
-        }
-        
-        td { padding: 8px 5px; }
-
-        .btn-add {
-            background: #fff;
-            color: var(--primary);
-            border: 1.5px dashed var(--primary);
-            padding: 11px;
-            border-radius: 8px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: 500;
-            margin-top: 10px;
-        }
-
+        .header { background: var(--primary); padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+        .header img { height: 44px; width: 44px; border-radius: 8px; object-fit: cover; }
+        .header-title { color: #fff; font-size: 17px; font-weight: 600; }
+        .header-sub { color: rgba(255,255,255,0.75); font-size: 12px; }
+        .app { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+        .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 12px; }
+        .section-title { font-size: 13px; font-weight: 500; color: var(--primary); margin-bottom: 14px; border-bottom: 0.5px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        label { display: block; font-size: 12px; color: var(--text-light); margin: 10px 0 4px; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        input[type=number] { font-weight: 600; background: #f9fdff; }
+        table { width: 100%; border-collapse: collapse; min-width: 950px; }
+        th { text-align: left; font-size: 11px; color: var(--text-light); padding: 10px 5px; border-bottom: 1px solid var(--border); }
+        .btn-add { background: #fff; color: var(--primary); border: 1.5px dashed var(--primary); padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 500; margin-top: 10px; }
         .btn-remove { color: #ccc; cursor: pointer; padding: 5px; }
         .btn-remove:hover { color: #e24b4a; }
-
-        .footer-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            background: white;
-            border-top: 1px solid var(--border);
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 200;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-        .grand-total { font-size: 22px; font-weight: 600; color: var(--primary); }
-
-        .btn-submit {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 13px 24px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        #statusMsg { text-align: center; padding: 10px; font-size: 14px; }
-
-        .loading-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 1000; color: white;
-        }
-        .spinner {
-            width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid #fff; border-radius: 50%;
-            animation: spin 0.9s linear infinite; margin-bottom: 12px;
-        }
+        .footer-summary { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: white; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .grand-total { font-size: 24px; font-weight: 700; color: var(--primary); }
+        .btn-submit { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 14px 28px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; color: white; }
+        .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        @media (max-width: 600px) { .grid-header { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loading-overlay">
-    <div class="spinner"></div>
-    <p>Sincronizzazione database...</p>
-</div>
+<div id="loader" class="loading-overlay"><div class="spinner"></div><p>Sincronizzazione dati...</p></div>
 
 <div class="header">
     <img src="https://via.placeholder.com/44" alt="Logo">
-    <div class="header-text">
-        <div class="header-title">Edilcrema ERP</div>
-        <div class="header-sub">Precision Costing System</div>
-    </div>
+    <div><div class="header-title">Edilcrema ERP</div><div class="header-sub">Precision Costing System</div></div>
 </div>
 
 <div class="app">
     <form id="erpForm">
-
         <div class="card">
-            <div class="section-title"><i class="fas fa-industry"></i> Intestazione commessa</div>
-            <div class="grid-header">
-                <div>
-                    <label>Data ordine</label>
-                    <input type="date" id="data" required>
-                </div>
-                <div>
-                    <label>Cantiere di riferimento</label>
-                    <select id="cantiere" required><option value="">— Seleziona cantiere —</option></select>
-                </div>
-                <div>
-                    <label>Stato documento</label>
-                    <select id="docStatus">
-                        <option value="Inserito">Inserito</option>
-                        <option value="Preventivo">Preventivo</option>
-                        <option value="Fatturato">Fatturato</option>
-                    </select>
-                </div>
+            <div class="section-title"><i class="fas fa-industry"></i> Intestazione</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div><label>Data ordine</label><input type="date" id="data" required></div>
+                <div><label>Cantiere</label><select id="cantiere" required><option value="">— Seleziona —</option></select></div>
+                <div><label>Stato</label><select id="docStatus"><option value="Inserito">Inserito</option><option value="Preventivo">Preventivo</option><option value="Fatturato">Fatturato</option></select></div>
             </div>
         </div>
 
@@ -202,41 +58,34 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width:15%">Fornitore</th>
-                            <th style="width:15%">Macro</th>
-                            <th style="width:18%">Micro / Materiale</th>
+                            <th style="width:14%">Fornitore</th>
+                            <th style="width:14%">Macro</th>
+                            <th style="width:16%">Micro / Materiale</th>
                             <th style="width:10%">Unità</th>
                             <th style="width:10%">Qtà</th>
-                            <th style="width:10%">Prezzo</th>
-                            <th style="width:18%">Note / DDT</th>
+                            <th style="width:12%">Prezzo Unit.</th>
+                            <th style="width:16%">Note / DDT</th>
                             <th style="width:4%"></th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <button type="button" class="btn-add" onclick="addRow()">
-                <i class="fas fa-plus" style="font-size:12px; margin-right:6px;"></i> Aggiungi voce
-            </button>
+            <button type="button" class="btn-add" onclick="addRow()"><i class="fas fa-plus"></i> Aggiungi riga</button>
         </div>
 
-        <div id="statusMsg"></div>
+        <div id="statusMsg" style="text-align:center; margin-top:10px;"></div>
 
         <div class="footer-summary">
-            <div>
-                <div style="font-size: 11px; color: #888; text-transform: uppercase;">Totale imponibile</div>
-                <div class="grand-total" id="grandTotal">€ 0,00</div>
-            </div>
-            <button type="submit" id="submitBtn" class="btn-submit">Registra acquisto</button>
+            <div><div style="font-size:11px; color:#888;">TOTALE IMPONIBILE</div><div class="grand-total" id="grandTotal">€ 0,00</div></div>
+            <button type="submit" id="submitBtn" class="btn-submit">Registra Acquisto</button>
         </div>
-
     </form>
 </div>
 
 <datalist id="fornitore_list"></datalist>
 
 <script>
-    // INSERISCI QUI IL TUO URL DELLO SCRIPT
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgzPBU7EVwxZRfVt-Mhsth44NfIl2Dqi_iGSrQTT91poAjvdn_B7x420Tl1Y5LGLVX7A/exec";
     let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
 
@@ -250,39 +99,23 @@
             document.getElementById('fornitore_list').innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
             addRow();
             document.getElementById('loader').style.display = 'none';
-        } catch (e) { 
-            console.error(e);
-            document.getElementById('loader').style.display = 'none';
-            alert("Errore caricamento dati!"); 
-        }
+        } catch (e) { alert("Errore caricamento dati!"); }
     };
 
     function addRow() {
         const id = Date.now();
         const tr = document.createElement('tr');
         tr.id = `row-${id}`;
-        let macroOpts = '<option value="">— Macro —</option>';
-        Object.keys(DATA_STORE.mappatura).sort().forEach(m => macroOpts += `<option value="${m}">${m}</option>`);
+        let mOpts = '<option value="">— Macro —</option>';
+        Object.keys(DATA_STORE.mappatura).sort().forEach(m => mOpts += `<option value="${m}">${m}</option>`);
 
-        // UNITA' DI MISURA AGGIORNATE
         tr.innerHTML = `
             <td><input type="text" class="m-fornitore" list="fornitore_list" placeholder="Fornitore..." required></td>
-            <td><select class="m-macro" onchange="updateMicro('${id}')" required>${macroOpts}</select></td>
+            <td><select class="m-macro" onchange="updateMicro('${id}')" required>${mOpts}</select></td>
             <td><input type="text" class="m-micro" list="list-${id}" placeholder="Materiale..." required><datalist id="list-${id}"></datalist></td>
-            <td>
-                <select class="m-unit">
-                    <option value="NR">NR</option>
-                    <option value="MC">MC</option>
-                    <option value="KG">KG</option>
-                    <option value="ML">ML</option>
-                    <option value="M">M</option>
-                    <option value="T">T</option>
-                    <option value="PZ">PZ</option>
-                    <option value="ORE">ORE</option>
-                </select>
-            </td>
-            <td><input type="number" class="m-qty" step="0.01" value="1.00" oninput="calc()"></td>
-            <td><input type="number" class="m-price" step="0.01" placeholder="0.00" oninput="calc()" required></td>
+            <td><select class="m-unit"><option value="NR">NR</option><option value="MC">MC</option><option value="KG">KG</option><option value="ML">ML</option><option value="M">M</option><option value="T">T</option><option value="PZ">PZ</option><option value="ORE">ORE</option></select></td>
+            <td><input type="number" class="m-qty" step="0.00001" value="1.00000" oninput="calc()"></td>
+            <td><input type="number" class="m-price" step="0.00001" placeholder="0.00000" oninput="calc()" required></td>
             <td><input type="text" class="m-note" placeholder="Note..."></td>
             <td><i class="fas fa-trash btn-remove" onclick="document.getElementById('row-${id}').remove();calc()"></i></td>
         `;
@@ -290,31 +123,31 @@
     }
 
     function updateMicro(id) {
-        const macro = document.querySelector(`#row-${id} .m-macro`).value;
-        document.getElementById(`list-${id}`).innerHTML = (DATA_STORE.mappatura[macro] || []).map(m => `<option value="${m}">`).join('');
+        const m = document.querySelector(`#row-${id} .m-macro`).value;
+        document.getElementById(`list-${id}`).innerHTML = (DATA_STORE.mappatura[m] || []).map(x => `<option value="${x}">`).join('');
     }
 
     function calc() {
-        let total = 0;
+        let tot = 0;
         document.querySelectorAll('#tableBody tr').forEach(tr => {
             const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
             const p = parseFloat(tr.querySelector('.m-price').value) || 0;
-            total += q * p;
+            tot += q * p;
         });
-        document.getElementById('grandTotal').innerText = '€ ' + total.toLocaleString('it-IT', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('grandTotal').innerText = '€ ' + tot.toLocaleString('it-IT', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
     document.getElementById('erpForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('statusMsg');
-        btn.disabled = true;
-        msg.style.color = '#888';
-        msg.innerHTML = "Invio in corso...";
+        btn.disabled = true; msg.innerHTML = "Invio...";
 
         try {
             const rows = document.querySelectorAll('#tableBody tr');
             for (let tr of rows) {
+                const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
+                const p = parseFloat(tr.querySelector('.m-price').value) || 0;
                 const payload = {
                     data: document.getElementById('data').value,
                     cantiere: document.getElementById('cantiere').value,
@@ -323,21 +156,16 @@
                     macro: tr.querySelector('.m-macro').value,
                     micro: tr.querySelector('.m-micro').value,
                     unit: tr.querySelector('.m-unit').value,
-                    qty: tr.querySelector('.m-qty').value,
-                    price: tr.querySelector('.m-price').value,
-                    note: tr.querySelector('.m-note').value,
-                    total: (parseFloat(tr.querySelector('.m-qty').value) * parseFloat(tr.querySelector('.m-price').value)).toFixed(2)
+                    qty: q.toFixed(5),
+                    price: p.toFixed(5),
+                    total: (q * p).toFixed(5),
+                    note: tr.querySelector('.m-note').value
                 };
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
             }
-            msg.style.color = "#10b981";
-            msg.innerHTML = "✓ Registrato con successo!";
-            setTimeout(() => location.reload(), 1500);
-        } catch (err) {
-            msg.style.color = "#e24b4a";
-            msg.innerHTML = "Errore durante l'invio.";
-            btn.disabled = false;
-        }
+            msg.innerHTML = "✓ Registrato!";
+            setTimeout(() => location.reload(), 1000);
+        } catch (err) { msg.innerHTML = "Errore!"; btn.disabled = false; }
     };
 </script>
 </body>
