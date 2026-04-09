@@ -119,7 +119,7 @@
 
     <div id="loader" class="loading-overlay">
         <div class="spinner"></div>
-        <p id="loaderText" style="font-weight: 600; color: var(--primary);">Inizializzazione Edilcrema ERP...</p>
+        <p id="loaderText" style="font-weight: 600; color: var(--primary);">Sincronizzazione Database Edilcrema...</p>
     </div>
 
     <div class="header">
@@ -176,8 +176,7 @@
                                 <th style="width:4%"></th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
-                            </tbody>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
                 <button type="button" class="btn-add" onclick="addRow()">
@@ -202,8 +201,158 @@
     <datalist id="fornitore_list"></datalist>
 
     <script>
-        // QUI VA IL CODICE JAVASCRIPT CHE TI HO FORNITO NEL MESSAGGIO PRECEDENTE
-    </script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWFUd3aYD6egl-T15kRi8q_Hk1QVHX0_uZZf5M83mSZpYpXMGdD8J76WEU3IoaO84Dtg/exec";
 
+        let DATA_STORE = { 
+            cantieri: [], 
+            fornitori: [], 
+            mappatura: {} 
+        };
+
+        window.onload = async () => {
+            document.getElementById('data').valueAsDate = new Date();
+            const loaderText = document.getElementById('loaderText');
+            
+            try {
+                const response = await fetch(`${SCRIPT_URL}?v=${Date.now()}`);
+                if (!response.ok) throw new Error("Errore di rete.");
+                
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                DATA_STORE = data;
+
+                // Popolamento Cantieri
+                const cantiereSelect = document.getElementById('cantiere');
+                cantiereSelect.innerHTML = '<option value="">— Seleziona Cantiere —</option>';
+                if (DATA_STORE.cantieri) {
+                    DATA_STORE.cantieri.forEach(c => {
+                        cantiereSelect.add(new Option(c, c));
+                    });
+                }
+
+                // Popolamento Fornitori
+                const fornitoreList = document.getElementById('fornitore_list');
+                if (DATA_STORE.fornitori) {
+                    fornitoreList.innerHTML = DATA_STORE.fornitori
+                        .map(f => `<option value="${f}">`)
+                        .join('');
+                }
+
+                addRow();
+                document.getElementById('loader').style.display = 'none';
+
+            } catch (err) { 
+                console.error("Errore:", err);
+                loaderText.innerHTML = `<span style='color:#e74c3c'>ERRORE:<br>${err.message}</span>`;
+                setTimeout(() => { 
+                    document.getElementById('loader').style.display = 'none'; 
+                    addRow(); 
+                }, 4000);
+            }
+        };
+
+        function addRow() {
+            const id = Date.now();
+            const tr = document.createElement('tr');
+            tr.id = `row-${id}`;
+            
+            let macroOptions = '<option value="">— Macro —</option>';
+            if (DATA_STORE.mappatura) {
+                Object.keys(DATA_STORE.mappatura).sort().forEach(m => {
+                    macroOptions += `<option value="${m}">${m}</option>`;
+                });
+            }
+
+            tr.innerHTML = `
+                <td><input type="text" class="m-fornitore" list="fornitore_list" placeholder="Fornitore..." required></td>
+                <td><select class="m-macro" onchange="updateMicro('${id}')" required>${macroOptions}</select></td>
+                <td>
+                    <input type="text" class="m-micro" list="list-${id}" placeholder="Materiale..." required>
+                    <datalist id="list-${id}"></datalist>
+                </td>
+                <td>
+                    <select class="m-unit">
+                        <option value="NR">NR</option><option value="MC">MC</option>
+                        <option value="KG">KG</option><option value="ML">ML</option>
+                        <option value="M">M</option><option value="T">T</option>
+                        <option value="PZ">PZ</option><option value="ORE">ORE</option>
+                    </select>
+                </td>
+                <td><input type="number" class="m-qty" step="0.00001" value="1.00000" oninput="calc()"></td>
+                <td><input type="number" class="m-price" step="0.00001" placeholder="0.00000" oninput="calc()" required></td>
+                <td><input type="text" class="m-note" placeholder="Note / DDT..."></td>
+                <td><i class="fas fa-trash-alt btn-remove" onclick="removeRow('${id}')" title="Rimuovi"></i></td>
+            `;
+            document.getElementById('tableBody').appendChild(tr);
+        }
+
+        function updateMicro(id) {
+            const macroValue = document.querySelector(`#row-${id} .m-macro`).value;
+            const microDatalist = document.getElementById(`list-${id}`);
+            const microInput = document.querySelector(`#row-${id} .m-micro`);
+            microInput.value = "";
+            if (DATA_STORE.mappatura && DATA_STORE.mappatura[macroValue]) {
+                microDatalist.innerHTML = DATA_STORE.mappatura[macroValue]
+                    .map(item => `<option value="${item}">`)
+                    .join('');
+            }
+        }
+
+        function calc() {
+            let total = 0;
+            document.querySelectorAll('#tableBody tr').forEach(tr => {
+                const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
+                const p = parseFloat(tr.querySelector('.m-price').value) || 0;
+                total += q * p;
+            });
+            document.getElementById('grandTotal').innerText = '€ ' + total.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+        }
+
+        function removeRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) row.remove();
+            calc();
+        }
+
+        document.getElementById('erpForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('statusMsg');
+            btn.disabled = true;
+            msg.innerHTML = "Invio in corso...";
+
+            try {
+                const rows = document.querySelectorAll('#tableBody tr');
+                const common = {
+                    data: document.getElementById('data').value,
+                    cantiere: document.getElementById('cantiere').value,
+                    status: document.getElementById('docStatus').value
+                };
+
+                for (let tr of rows) {
+                    const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
+                    const p = parseFloat(tr.querySelector('.m-price').value) || 0;
+                    const payload = {
+                        ...common,
+                        fornitore: tr.querySelector('.m-fornitore').value,
+                        macro: tr.querySelector('.m-macro').value,
+                        micro: tr.querySelector('.m-micro').value,
+                        unit: tr.querySelector('.m-unit').value,
+                        qty: q.toFixed(5),
+                        price: p.toFixed(5),
+                        total: (q * p).toFixed(5),
+                        note: tr.querySelector('.m-note').value
+                    };
+                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                }
+                msg.innerHTML = "✅ REGISTRATO CON SUCCESSO!";
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) {
+                msg.innerHTML = "❌ ERRORE!";
+                btn.disabled = false;
+            }
+        };
+    </script>
 </body>
 </html>
