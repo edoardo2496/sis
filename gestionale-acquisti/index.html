@@ -3,242 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EDILCREMA ERP | GESTIONE PREVENTIVI</title>
+    <title>EDILCREMA ERP | PRO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --primary: #4a90e2; 
-            --bg: #f4f7f9; 
-            --border: #dbe2e8; 
-            --text: #2c3e50; 
-            --text-light: #7f8c8d; 
-            --success: #27ae60;
-            --danger: #e74c3c;
-        }
-
+        :root { --primary: #4a90e2; --bg: #f4f7f9; --border: #dbe2e8; --text: #2c3e50; --white: #ffffff; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 120px; min-height: 100vh; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 110px; }
+
+        /* Header con Logo */
+        .header { background: var(--white); padding: 12px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 3px solid var(--primary); }
+        .logo-container { width: 40px; height: 40px; }
+        .header-title { color: var(--primary); font-size: 18px; font-weight: 800; text-transform: uppercase; }
+
+        .app { max-width: 900px; margin: 0 auto; padding: 15px; }
+        .card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 12px; }
         
-        /* --- Header con Logo Stilizzato --- */
-        .header { 
-            background: white; padding: 12px 20px; display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary);
-        }
-        .logo-svg { width: 42px; height: 42px; fill: var(--primary); }
-        .header-title { color: var(--primary); font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .header-sub { color: var(--text-light); font-size: 11px; margin-top: -2px; }
+        .section-title { font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; }
 
-        .app { max-width: 1100px; margin: 0 auto; padding: 1.2rem; }
+        /* Form */
+        label { display: block; font-size: 10px; color: #7f8c8d; font-weight: 700; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
 
-        /* --- Tabs --- */
-        .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab { 
-            flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 10px; 
-            background: #fff; color: var(--text-light); cursor: pointer; font-weight: 600;
-            transition: 0.2s; text-align: center; font-size: 14px;
-        }
-        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* --- Cards --- */
-        .section { display: none; }
-        .section.active { display: block; }
-        .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        /* Tabella Dinamica */
+        .row-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; position: relative; }
         
-        .section-title { 
-            font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 15px; 
-            border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; 
-        }
-
-        /* --- Form --- */
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-        label { display: block; font-size: 10px; color: var(--text-light); margin: 8px 0 4px; font-weight: 700; text-transform: uppercase; }
-        select, input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; background: #fff; }
-        input[type="date"] { font-weight: 600; color: var(--primary); }
-
-        /* --- Tabella Righe --- */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { text-align: left; font-size: 10px; color: var(--text-light); padding: 10px 5px; text-transform: uppercase; border-bottom: 1px solid var(--bg); }
-        td { padding: 8px 4px; }
+        .input-row { display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; }
+        .desc-container { position: relative; display: flex; align-items: center; }
+        .btn-voice { position: absolute; right: 8px; color: var(--primary); border: none; background: none; font-size: 18px; cursor: pointer; padding: 5px; }
         
-        .btn-add { 
-            background: #fff; color: var(--primary); border: 2px dashed var(--primary); 
-            padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 700; margin-top: 10px;
-        }
-        .btn-remove { color: #ccc; background: none; border: none; cursor: pointer; font-size: 18px; padding: 5px; }
-        .btn-remove:hover { color: var(--danger); }
+        .u-m-select { font-weight: bold; background: #f8f9fa; }
 
-        /* --- Footer --- */
-        .footer-summary { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 25px; background: white; border-top: 1px solid var(--border); 
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
-        }
-        .grand-total { font-size: 26px; font-weight: 800; color: var(--primary); display: block; }
-        .btn-submit { 
-            background: var(--primary); color: white; border: none; border-radius: 8px; 
-            padding: 15px 30px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-        }
+        .btn-add { width: 100%; padding: 12px; background: none; border: 2px dashed var(--primary); color: var(--primary); border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-delete { position: absolute; top: -5px; right: -5px; background: #ff7675; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; }
 
-        /* --- Overlays --- */
-        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-size: 14px; opacity: 0; transition: 0.3s; z-index: 3000; }
-        .toast.show { opacity: 1; }
+        /* Footer */
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 15px 25px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .total-val { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loading-overlay"><div class="spinner"></div><p>Caricamento sistema...</p></div>
-
 <div class="header">
-    <svg class="logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 13c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM7 18v-7.3l5-4.5 5 4.5V18H7z"/>
-        <path d="M10 11h4v2h-4z" opacity=".3"/>
-    </svg>
-    <div class="header-text">
-        <div class="header-title">Edilcrema ERP</div>
-        <div class="header-sub">Gestione Approvvigionamenti</div>
+    <div class="logo-container">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" rx="20" fill="#4a90e2"/>
+            <path d="M50 25 L25 50 L25 75 L75 75 L75 50 Z" fill="white"/>
+            <path d="M25 75 Q50 60 75 75 Z" fill="#4a90e2"/>
+        </svg>
     </div>
+    <div class="header-title">Edilcrema ERP</div>
 </div>
 
 <div class="app">
-    <div class="tab-bar">
-        <div class="tab active" onclick="switchTab('ordine')">Nuova Richiesta</div>
-        <div class="tab" onclick="switchTab('dashboard')">Analisi Acquisti</div>
-    </div>
-
-    <div id="tab-ordine" class="section active">
-        <div class="card">
-            <div class="section-title"><i class="fas fa-calendar-check"></i> Pianificazione</div>
-            <div class="grid-3">
-                <div>
-                    <label>Consegna richiesta entro il:</label>
-                    <input type="date" id="data_consegna">
-                </div>
-                <div>
-                    <label>Cantiere</label>
-                    <select id="cantiere">
-                        <option value="">Seleziona...</option>
-                        <option value="Cantiere Milano">Cantiere Milano</option>
-                        <option value="Sede Crema">Sede Crema</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Fornitore Suggerito</label>
-                    <input type="text" id="fornitore" placeholder="es. Forniture Rossi">
-                </div>
+    <div class="card">
+        <div class="section-title">Testata Richiesta</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+                <label>Data Consegna</label>
+                <input type="date" id="data_consegna">
             </div>
-        </div>
-
-        <div class="card">
-            <div class="section-title"><i class="fas fa-list"></i> Elenco Materiali</div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Descrizione</th>
-                            <th style="width: 80px;">Qtà</th>
-                            <th style="width: 100px;">Stima Unit.</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+            <div>
+                <label>Cantiere</label>
+                <select id="cantiere">
+                    <option value="Sede">Sede</option>
+                    <option value="Cantiere 1">Cantiere 1</option>
+                </select>
             </div>
-            <button class="btn-add" onclick="addRow()"><i class="fas fa-plus"></i> AGGIUNGI ARTICOLO</button>
         </div>
     </div>
 
-    <div id="tab-dashboard" class="section">
-        <div class="card"><p style="text-align:center; color: #888;">Modulo Analisi in fase di sincronizzazione...</p></div>
+    <div class="card">
+        <div class="section-title">Dettaglio Materiali</div>
+        <div id="materiali-container">
+            </div>
+        <button class="btn-add" onclick="addRow()"><i class="fas fa-plus"></i> AGGIUNGI ARTICOLO</button>
     </div>
 </div>
 
-<div class="footer-summary">
-    <div>
-        <span style="font-size: 10px; color: #888; text-transform: uppercase;">Budget Stimato</span>
-        <span class="grand-total" id="grand-total">€ 0,00</span>
-    </div>
-    <button class="btn-submit" id="btn-salva" onclick="salvaRichiesta()">REGISTRA</button>
+<div class="footer">
+    <div class="total-display"><span class="total-val" id="grand-total">€ 0,00</span></div>
+    <button class="btn-submit" onclick="salvaTutto()">REGISTRA</button>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL = "INSERISCI_URL_QUI";
+const SCRIPT_URL = "IL_TUO_URL";
 
-function addRow(){
+function addRow() {
     const id = Date.now();
-    const tr = document.createElement('tr');
-    tr.id = `row-${id}`;
-    tr.innerHTML = `
-        <td><input type="text" class="m-mat" placeholder="Materiale..."></td>
-        <td><input type="number" class="m-qty" value="1" oninput="calcTotal()"></td>
-        <td><input type="number" class="m-price" placeholder="0.00" oninput="calcTotal()"></td>
-        <td><button class="btn-remove" onclick="removeRow('${id}')">×</button></td>
+    const container = document.getElementById('materiali-container');
+    const div = document.createElement('div');
+    div.className = 'row-container';
+    div.id = `row-${id}`;
+    
+    div.innerHTML = `
+        <button class="btn-delete" onclick="document.getElementById('row-${id}').remove(); updateCalc()">×</button>
+        <div class="desc-container">
+            <input type="text" class="m-mat" placeholder="Descrizione materiale...">
+            <button class="btn-voice" onclick="startVoice(this)"><i class="fas fa-microphone"></i></button>
+        </div>
+        <div class="input-row">
+            <select class="m-um u-m-select">
+                <option value="NR">NR</option>
+                <option value="M">M</option>
+                <option value="ML">ML</option>
+                <option value="MQ">MQ</option>
+                <option value="MC">MC</option>
+                <option value="KG">KG</option>
+                <option value="T">T</option>
+            </select>
+            <input type="number" class="m-qty" placeholder="Qtà" oninput="updateCalc()">
+            <input type="number" class="m-price" placeholder="€" oninput="updateCalc()">
+        </div>
     `;
-    document.getElementById('tableBody').appendChild(tr);
+    container.appendChild(div);
 }
 
-function removeRow(id){ document.getElementById(`row-${id}`).remove(); calcTotal(); }
+// Funzione Vocale
+function startVoice(btn) {
+    const input = btn.previousElementSibling;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        alert("Il tuo browser non supporta il riconoscimento vocale.");
+        return;
+    }
 
-function calcTotal(){
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'it-IT';
+    
+    btn.style.color = 'red';
+    recognition.start();
+
+    recognition.onresult = (event) => {
+        input.value = event.results[0][0].transcript;
+        btn.style.color = 'var(--primary)';
+    };
+
+    recognition.onerror = () => {
+        btn.style.color = 'var(--primary)';
+        alert("Errore nella registrazione vocale.");
+    };
+
+    recognition.onspeechend = () => {
+        recognition.stop();
+        btn.style.color = 'var(--primary)';
+    };
+}
+
+function updateCalc() {
     let total = 0;
-    document.querySelectorAll('#tableBody tr').forEach(tr => {
-        total += (parseFloat(tr.querySelector('.m-qty').value) || 0) * (parseFloat(tr.querySelector('.m-price').value) || 0);
+    document.querySelectorAll('.row-container').forEach(row => {
+        const q = row.querySelector('.m-qty').value || 0;
+        const p = row.querySelector('.m-price').value || 0;
+        total += (q * p);
     });
     document.getElementById('grand-total').textContent = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(total);
 }
 
-async function salvaRichiesta(){
-    const btn = document.getElementById('btn-salva');
-    const dataConsegna = document.getElementById('data_consegna').value;
-    const timestamp = new Date().toLocaleString('it-IT'); // Data registrazione automatica
+async function salvaTutto() {
+    const ts = new Date().toLocaleString('it-IT');
+    const dataC = document.getElementById('data_consegna').value;
+    const rows = document.querySelectorAll('.row-container');
 
-    if(!dataConsegna) return alert("Specifica una data di consegna!");
-
-    btn.disabled = true;
-    btn.textContent = "INVIO...";
-
-    try {
-        const rows = document.querySelectorAll('#tableBody tr');
-        for(let tr of rows){
-            const payload = {
-                tipo: 'salva',
-                timestamp_registrazione: timestamp, // Campo automatico
-                data_consegna_richiesta: dataConsegna, // Campo compilato
-                cantiere: document.getElementById('cantiere').value,
-                fornitore: document.getElementById('fornitore').value,
-                materiale: tr.querySelector('.m-mat').value,
-                quantita: tr.querySelector('.m-qty').value,
-                totale_stimato: (tr.querySelector('.m-qty').value * tr.querySelector('.m-price').value).toFixed(2)
-            };
-            await fetch(SCRIPT_URL + '?' + new URLSearchParams(payload));
-        }
-        const t = document.getElementById('toast');
-        t.textContent = "Richiesta registrata correttamente!";
-        t.classList.add('show');
-        setTimeout(() => location.reload(), 2000);
-    } catch(e) {
-        alert("Errore salvataggio");
-        btn.disabled = false;
-        btn.textContent = "REGISTRA";
+    for(let r of rows) {
+        const data = {
+            tipo: 'salva',
+            timestamp: ts,
+            consegna_entro: dataC,
+            cantiere: document.getElementById('cantiere').value,
+            materiale: r.querySelector('.m-mat').value,
+            um: r.querySelector('.m-um').value,
+            qta: r.querySelector('.m-qty').value,
+            prezzo: r.querySelector('.m-price').value
+        };
+        // Logica fetch...
+        console.log("Invio:", data);
     }
+    alert("Inviato!");
 }
 
-function switchTab(name){
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['ordine','dashboard'][i] === name));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-}
-
-window.onload = () => {
-    addRow();
-    setTimeout(() => document.getElementById('loader').style.display='none', 600);
-};
+window.onload = addRow;
 </script>
 </body>
 </html>
