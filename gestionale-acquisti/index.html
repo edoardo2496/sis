@@ -16,94 +16,69 @@
             --danger: #e74c3c;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); padding-bottom: 120px; min-height: 100vh; }
         
-        /* --- Header --- */
+        /* --- Header con Logo Stilizzato --- */
         .header { 
-            background: white; 
-            padding: 15px 25px; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-bottom: 3px solid var(--primary);
+            background: white; padding: 12px 20px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary);
         }
-        .header img { height: 45px; border-radius: 8px; }
+        .logo-svg { width: 42px; height: 42px; fill: var(--primary); }
         .header-title { color: var(--primary); font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .header-sub { color: var(--text-light); font-size: 12px; }
+        .header-sub { color: var(--text-light); font-size: 11px; margin-top: -2px; }
 
-        .app { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+        .app { max-width: 1100px; margin: 0 auto; padding: 1.2rem; }
 
         /* --- Tabs --- */
         .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab { 
             flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 10px; 
             background: #fff; color: var(--text-light); cursor: pointer; font-weight: 600;
-            transition: all 0.2s; text-align: center;
+            transition: 0.2s; text-align: center; font-size: 14px;
         }
-        .tab.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2); }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* --- Cards & Sections --- */
+        /* --- Cards --- */
         .section { display: none; }
         .section.active { display: block; }
-        .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         
         .section-title { 
-            font-size: 13px; font-weight: 700; color: var(--primary); 
-            margin-bottom: 15px; border-bottom: 1px solid var(--border); 
-            padding-bottom: 10px; display: flex; align-items: center; 
-            gap: 8px; text-transform: uppercase; 
+            font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 15px; 
+            border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; 
         }
 
         /* --- Form --- */
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        label { display: block; font-size: 11px; color: var(--text-light); margin: 10px 0 5px; font-weight: 700; text-transform: uppercase; }
-        select, input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; transition: border 0.2s; background: #fff; }
-        select:focus, input:focus { border-color: var(--primary); outline: none; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        label { display: block; font-size: 10px; color: var(--text-light); margin: 8px 0 4px; font-weight: 700; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; background: #fff; }
+        input[type="date"] { font-weight: 600; color: var(--primary); }
 
-        /* --- Table Righe --- */
-        .table-container { overflow-x: auto; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; font-size: 11px; color: var(--text-light); padding: 12px 8px; border-bottom: 2px solid var(--bg); text-transform: uppercase; }
-        td { padding: 10px 8px; vertical-align: middle; }
+        /* --- Tabella Righe --- */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { text-align: left; font-size: 10px; color: var(--text-light); padding: 10px 5px; text-transform: uppercase; border-bottom: 1px solid var(--bg); }
+        td { padding: 8px 4px; }
         
         .btn-add { 
             background: #fff; color: var(--primary); border: 2px dashed var(--primary); 
-            padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; 
-            font-weight: 700; margin-top: 10px; transition: all 0.2s;
+            padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 700; margin-top: 10px;
         }
-        .btn-add:hover { background: #eff6ff; }
-        .btn-remove { color: #bdc3c7; background: none; border: none; cursor: pointer; font-size: 18px; }
+        .btn-remove { color: #ccc; background: none; border: none; cursor: pointer; font-size: 18px; padding: 5px; }
         .btn-remove:hover { color: var(--danger); }
 
-        /* --- Footer Summary --- */
+        /* --- Footer --- */
         .footer-summary { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 30px; background: white; border-top: 1px solid var(--border); 
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; 
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
+            padding: 15px 25px; background: white; border-top: 1px solid var(--border); 
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
         }
-        .total-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; font-weight: 700; }
-        .grand-total { font-size: 28px; font-weight: 800; color: var(--primary); display: block; }
-        
+        .grand-total { font-size: 26px; font-weight: 800; color: var(--primary); display: block; }
         .btn-submit { 
             background: var(--primary); color: white; border: none; border-radius: 8px; 
-            padding: 16px 35px; font-size: 15px; font-weight: 700; cursor: pointer; 
-            box-shadow: 0 4px 14px rgba(74, 144, 226, 0.3); transition: all 0.2s;
+            padding: 15px 30px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
-        .btn-submit:active { transform: scale(0.96); }
-        .btn-submit:disabled { background: #bdc3c7; cursor: not-allowed; }
-
-        /* --- Dashboard --- */
-        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .metric { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
-        .metric-val { font-size: 24px; font-weight: 800; color: var(--primary); }
-        .bar-item { margin-bottom: 15px; }
-        .bar-info { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
-        .bar-track { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--primary); transition: width 0.8s ease; }
 
         /* --- Overlays --- */
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
@@ -112,224 +87,158 @@
         
         .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-size: 14px; opacity: 0; transition: 0.3s; z-index: 3000; }
         .toast.show { opacity: 1; }
-
-        @media (max-width: 600px) {
-            .footer-summary { padding: 15px; }
-            .btn-submit { padding: 12px 20px; font-size: 14px; }
-            .grand-total { font-size: 22px; }
-            th:nth-child(4), td:nth-child(4) { display: none; } /* Nasconde note su mobile */
-        }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loading-overlay">
-    <div class="spinner"></div>
-    <p style="font-weight: 600; color: var(--text-light)">Sincronizzazione ERP...</p>
-</div>
+<div id="loader" class="loading-overlay"><div class="spinner"></div><p>Caricamento sistema...</p></div>
 
 <div class="header">
+    <svg class="logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 13c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM7 18v-7.3l5-4.5 5 4.5V18H7z"/>
+        <path d="M10 11h4v2h-4z" opacity=".3"/>
+    </svg>
     <div class="header-text">
         <div class="header-title">Edilcrema ERP</div>
-        <div class="header-sub">PREVENTIVI PER L'EDILIZIA</div>
+        <div class="header-sub">Gestione Approvvigionamenti</div>
     </div>
 </div>
 
 <div class="app">
     <div class="tab-bar">
-        <div class="tab active" onclick="switchTab('ordine')"><i class="fas fa-file-invoice"></i> Nuovo Preventivo</div>
-        <div class="tab" onclick="switchTab('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
+        <div class="tab active" onclick="switchTab('ordine')">Nuova Richiesta</div>
+        <div class="tab" onclick="switchTab('dashboard')">Analisi Acquisti</div>
     </div>
 
     <div id="tab-ordine" class="section active">
         <div class="card">
-            <div class="section-title"><i class="fas fa-info-circle"></i> Intestazione</div>
+            <div class="section-title"><i class="fas fa-calendar-check"></i> Pianificazione</div>
             <div class="grid-3">
                 <div>
-                    <label>Data</label>
-                    <input type="date" id="data_ordine">
+                    <label>Consegna richiesta entro il:</label>
+                    <input type="date" id="data_consegna">
                 </div>
                 <div>
-                    <label>Fornitore</label>
-                    <input type="text" id="fornitore" list="lista_fornitori" placeholder="Seleziona fornitore...">
-                    <datalist id="lista_fornitori"></datalist>
+                    <label>Cantiere</label>
+                    <select id="cantiere">
+                        <option value="">Seleziona...</option>
+                        <option value="Cantiere Milano">Cantiere Milano</option>
+                        <option value="Sede Crema">Sede Crema</option>
+                    </select>
                 </div>
                 <div>
-                    <label>Cantiere / Destinazione</label>
-                    <select id="cantiere"></select>
+                    <label>Fornitore Suggerito</label>
+                    <input type="text" id="fornitore" placeholder="es. Forniture Rossi">
                 </div>
-            </div>
-            <div style="margin-top: 15px;">
-                <label>Stato</label>
-                <select id="stato">
-                    <option>Richiesta Preventivo</option>
-                    <option>Inviato</option>
-                    <option>Confermato</option>
-                    <option>Ricevuto</option>
-                </select>
             </div>
         </div>
 
         <div class="card">
-            <div class="section-title"><i class="fas fa-cubes"></i> Articoli / Materiali</div>
+            <div class="section-title"><i class="fas fa-list"></i> Elenco Materiali</div>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Descrizione</th>
-                            <th style="width: 15%;">Quantità</th>
-                            <th style="width: 20%;">Prezzo Unit.</th>
-                            <th>Note</th>
-                            <th style="width: 50px;"></th>
+                            <th>Descrizione</th>
+                            <th style="width: 80px;">Qtà</th>
+                            <th style="width: 100px;">Stima Unit.</th>
+                            <th style="width: 40px;"></th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <button class="btn-add" onclick="addRow()">
-                <i class="fas fa-plus"></i> AGGIUNGI RIGA MATERIALE
-            </button>
+            <button class="btn-add" onclick="addRow()"><i class="fas fa-plus"></i> AGGIUNGI ARTICOLO</button>
         </div>
     </div>
 
     <div id="tab-dashboard" class="section">
-        <div class="metric-grid">
-            <div class="metric">
-                <div class="total-label">Mese Corrente</div>
-                <div class="metric-val" id="spesa-mese">€ 0,00</div>
-            </div>
-            <div class="metric">
-                <div class="total-label">Totale Storico</div>
-                <div class="metric-val" id="tot-ordini">€ 0,00</div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="section-title">Distribuzione per Cantiere</div>
-            <div id="bar-cantieri"></div>
-        </div>
-        <div class="card">
-            <div class="section-title">Top Fornitori</div>
-            <div id="bar-fornitori"></div>
-        </div>
+        <div class="card"><p style="text-align:center; color: #888;">Modulo Analisi in fase di sincronizzazione...</p></div>
     </div>
 </div>
 
 <div class="footer-summary">
     <div>
-        <span class="total-label">Totale Stimato</span>
+        <span style="font-size: 10px; color: #888; text-transform: uppercase;">Budget Stimato</span>
         <span class="grand-total" id="grand-total">€ 0,00</span>
     </div>
-    <button class="btn-submit" id="btn-salva" onclick="salvaOrdine()">
-        <i class="fas fa-cloud-upload-alt"></i> REGISTRA
-    </button>
+    <button class="btn-submit" id="btn-salva" onclick="salvaRichiesta()">REGISTRA</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// --- CONFIGURAZIONE ---
-const SCRIPT_URL = "TUO_URL_GOOGLE_APPS_SCRIPT"; 
+const SCRIPT_URL = "INSERISCI_URL_QUI";
 
-function fmt(n){
-    return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(n);
-}
-
-function showToast(msg){
-    const t=document.getElementById('toast');
-    t.textContent=msg; t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// --- LOGICA RIGHE ---
 function addRow(){
     const id = Date.now();
     const tr = document.createElement('tr');
     tr.id = `row-${id}`;
     tr.innerHTML = `
-        <td><input type="text" class="m-mat" placeholder="es. Cemento 32.5..." required></td>
+        <td><input type="text" class="m-mat" placeholder="Materiale..."></td>
         <td><input type="number" class="m-qty" value="1" oninput="calcTotal()"></td>
         <td><input type="number" class="m-price" placeholder="0.00" oninput="calcTotal()"></td>
-        <td><input type="text" class="m-note" placeholder="..."></td>
-        <td><button class="btn-remove" onclick="removeRow('${id}')"><i class="fas fa-times"></i></button></td>
+        <td><button class="btn-remove" onclick="removeRow('${id}')">×</button></td>
     `;
     document.getElementById('tableBody').appendChild(tr);
 }
 
-function removeRow(id){
-    document.getElementById(`row-${id}`).remove();
-    calcTotal();
-}
+function removeRow(id){ document.getElementById(`row-${id}`).remove(); calcTotal(); }
 
 function calcTotal(){
     let total = 0;
     document.querySelectorAll('#tableBody tr').forEach(tr => {
-        const qty = parseFloat(tr.querySelector('.m-qty').value) || 0;
-        const price = parseFloat(tr.querySelector('.m-price').value) || 0;
-        total += (qty * price);
+        total += (parseFloat(tr.querySelector('.m-qty').value) || 0) * (parseFloat(tr.querySelector('.m-price').value) || 0);
     });
-    document.getElementById('grand-total').textContent = fmt(total);
+    document.getElementById('grand-total').textContent = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(total);
 }
 
-// --- INVIO DATI ---
-async function salvaOrdine(){
-    const fornitore = document.getElementById('fornitore').value;
-    const cantiere = document.getElementById('cantiere').value;
-    const rows = document.querySelectorAll('#tableBody tr');
-
-    if(!fornitore || !cantiere || rows.length === 0){
-        alert("Compila fornitore, cantiere e almeno una riga materiale.");
-        return;
-    }
-
+async function salvaRichiesta(){
     const btn = document.getElementById('btn-salva');
+    const dataConsegna = document.getElementById('data_consegna').value;
+    const timestamp = new Date().toLocaleString('it-IT'); // Data registrazione automatica
+
+    if(!dataConsegna) return alert("Specifica una data di consegna!");
+
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INVIO...';
+    btn.textContent = "INVIO...";
 
     try {
+        const rows = document.querySelectorAll('#tableBody tr');
         for(let tr of rows){
             const payload = {
                 tipo: 'salva',
-                data_ordine: document.getElementById('data_ordine').value,
-                fornitore: fornitore,
-                cantiere: cantiere,
-                stato: document.getElementById('stato').value,
+                timestamp_registrazione: timestamp, // Campo automatico
+                data_consegna_richiesta: dataConsegna, // Campo compilato
+                cantiere: document.getElementById('cantiere').value,
+                fornitore: document.getElementById('fornitore').value,
                 materiale: tr.querySelector('.m-mat').value,
                 quantita: tr.querySelector('.m-qty').value,
-                prezzo_unitario: tr.querySelector('.m-price').value,
-                totale: (tr.querySelector('.m-qty').value * tr.querySelector('.m-price').value).toFixed(2),
-                note: tr.querySelector('.m-note').value
+                totale_stimato: (tr.querySelector('.m-qty').value * tr.querySelector('.m-price').value).toFixed(2)
             };
             await fetch(SCRIPT_URL + '?' + new URLSearchParams(payload));
         }
-        showToast("✓ Registrazione completata con successo!");
-        location.reload(); 
+        const t = document.getElementById('toast');
+        t.textContent = "Richiesta registrata correttamente!";
+        t.classList.add('show');
+        setTimeout(() => location.reload(), 2000);
     } catch(e) {
-        alert("Errore di connessione. Riprova.");
+        alert("Errore salvataggio");
         btn.disabled = false;
-        btn.innerHTML = 'REGISTRA';
+        btn.textContent = "REGISTRA";
     }
 }
 
-// --- DASHBOARD & TABS ---
 function switchTab(name){
     document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['ordine','dashboard'][i] === name));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
-    if(name === 'dashboard') caricaDashboard();
-}
-
-async function caricaDashboard(){
-    // Qui andrebbe la logica di fetch dei dati esistenti per i grafici
-    // come nel tuo primo codice.
 }
 
 window.onload = () => {
-    document.getElementById('data_ordine').value = new Date().toISOString().split('T')[0];
     addRow();
-    // Simulo fine caricamento
-    setTimeout(() => document.getElementById('loader').style.display='none', 800);
+    setTimeout(() => document.getElementById('loader').style.display='none', 600);
 };
 </script>
-
 </body>
 </html>
