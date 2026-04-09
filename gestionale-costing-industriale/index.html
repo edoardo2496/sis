@@ -18,7 +18,6 @@
         
         body { background: var(--bg); color: var(--text); padding-bottom: 120px; min-height: 100vh; }
         
-        /* Header */
         .header { 
             background: white; 
             padding: 15px 25px; 
@@ -31,88 +30,57 @@
         .header-title { color: var(--primary); font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .header-sub { color: var(--text-light); font-size: 13px; }
 
-        /* Layout */
         .app { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
         .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         
         .section-title { 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: var(--primary); 
-            margin-bottom: 15px; 
-            border-bottom: 1px solid var(--border); 
-            padding-bottom: 10px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            text-transform: uppercase; 
+            font-size: 14px; font-weight: 700; color: var(--primary); 
+            margin-bottom: 15px; border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px; display: flex; align-items: center; 
+            gap: 8px; text-transform: uppercase; 
         }
 
-        /* Form Elements */
         label { display: block; font-size: 11px; color: var(--text-light); margin: 10px 0 5px; font-weight: 700; text-transform: uppercase; }
         select, input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; transition: border 0.2s; }
         select:focus, input:focus { border-color: var(--primary); outline: none; }
         input[type=number] { font-weight: 600; background: #f9fbff; }
 
-        /* Table Style */
         .table-container { overflow-x: auto; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { text-align: left; font-size: 11px; color: var(--text-light); padding: 12px 8px; border-bottom: 2px solid var(--bg); text-transform: uppercase; }
         td { padding: 8px; vertical-align: middle; }
 
-        /* Buttons */
         .btn-add { 
-            background: #fff; 
-            color: var(--primary); 
-            border: 2px dashed var(--primary); 
-            padding: 12px; 
-            border-radius: 8px; 
-            width: 100%; 
-            cursor: pointer; 
-            font-weight: 700; 
-            margin-top: 10px;
-            transition: all 0.2s;
+            background: #fff; color: var(--primary); border: 2px dashed var(--primary); 
+            padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; 
+            font-weight: 700; margin-top: 10px; transition: all 0.2s;
         }
         .btn-add:hover { background: #eff6ff; }
         
         .btn-remove { color: #bdc3c7; cursor: pointer; font-size: 18px; transition: color 0.2s; }
         .btn-remove:hover { color: #e74c3c; }
 
-        /* Footer Sticky */
         .footer-summary { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 20px 40px; 
-            background: white; 
-            border-top: 1px solid var(--border); 
-            position: fixed; 
-            bottom: 0; left: 0; right: 0; 
-            z-index: 100; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 40px; background: white; border-top: 1px solid var(--border); 
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; 
             box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
         }
         .grand-total { font-size: 32px; font-weight: 800; color: var(--primary); }
         .btn-submit { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            padding: 16px 40px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            cursor: pointer; 
+            background: var(--primary); color: white; border: none; border-radius: 8px; 
+            padding: 16px 40px; font-size: 16px; font-weight: 700; cursor: pointer; 
             box-shadow: 0 4px 14px rgba(74, 144, 226, 0.4); 
             transition: transform 0.1s, background 0.2s;
         }
         .btn-submit:active { transform: scale(0.98); }
         .btn-submit:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
 
-        /* Loader */
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        #statusMsg { font-size: 14px; margin-top: 10px; min-height: 20px; }
+        #statusMsg { font-size: 14px; margin-top: 10px; min-height: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -176,8 +144,7 @@
                                 <th style="width:4%"></th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
-                        </tbody>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
                 <button type="button" class="btn-add" onclick="addRow()">
@@ -185,7 +152,7 @@
                 </button>
             </div>
 
-            <div id="statusMsg" style="text-align:center; font-weight: bold;"></div>
+            <div id="statusMsg"></div>
             
             <div class="footer-summary">
                 <div>
@@ -202,57 +169,45 @@
     <datalist id="fornitore_list"></datalist>
 
     <script>
-        // --- CONFIGURAZIONE ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWFUd3aYD6egl-T15kRi8q_Hk1QVHX0_uZZf5M83mSZpYpXMGdD8J76WEU3IoaO84Dtg/exec";
+        // ─── CONFIGURAZIONE ──────────────────────────────────────────────────────
+        // Sostituisci con l'URL del tuo script GAS deployato come Web App
+        const SCRIPT_URL = "https://script.google.com/macros/s/TUO_SCRIPT_ID/exec";
 
-        let DATA_STORE = { 
-            cantieri: [], 
-            fornitori: [], 
-            mappatura: {} 
-        };
+        // ─── DATA STORE ──────────────────────────────────────────────────────────
+        let DATA_STORE = { cantieri: [], fornitori: [], mappatura: {} };
 
+        // ─── INIT ────────────────────────────────────────────────────────────────
         window.onload = async () => {
-            // Imposta la data odierna
             document.getElementById('data').valueAsDate = new Date();
             const loaderText = document.getElementById('loaderText');
-            
+
             try {
-                console.log("Inizializzazione sincronizzazione dati...");
-                
-                const response = await fetch(`${SCRIPT_URL}?v=${Date.now()}`);
-                
-                if (!response.ok) throw new Error("Risposta del server non valida.");
-                
-                const data = await response.json();
-                if (data.error) throw new Error(data.error);
+                // Carica cantieri, fornitori e mappatura macro/micro in parallelo
+                const [resCantieri, resFornitori, resMappatura] = await Promise.all([
+                    fetch(`${SCRIPT_URL}?tipo=cantieri&v=${Date.now()}`),
+                    fetch(`${SCRIPT_URL}?tipo=fornitori&v=${Date.now()}`),
+                    fetch(`${SCRIPT_URL}?tipo=mappatura&v=${Date.now()}`)
+                ]);
 
-                DATA_STORE = data;
-                console.log("Sincronizzazione completata con successo.");
+                DATA_STORE.cantieri  = await resCantieri.json();
+                DATA_STORE.fornitori = await resFornitori.json();
+                DATA_STORE.mappatura = await resMappatura.json();
 
-                // 1. Popolamento Cantieri
+                // Popola cantieri
                 const cSel = document.getElementById('cantiere');
                 cSel.innerHTML = '<option value="">— Seleziona Cantiere —</option>';
-                if (DATA_STORE.cantieri) {
-                    DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
-                }
+                DATA_STORE.cantieri.forEach(c => cSel.add(new Option(c, c)));
 
-                // 2. Popolamento Datalist Fornitori
+                // Popola datalist fornitori
                 const fList = document.getElementById('fornitore_list');
-                if (DATA_STORE.fornitori) {
-                    fList.innerHTML = DATA_STORE.fornitori
-                        .map(f => `<option value="${f}">`)
-                        .join('');
-                }
+                fList.innerHTML = DATA_STORE.fornitori.map(f => `<option value="${f}">`).join('');
 
-                // 3. Prima riga
                 addRow();
-                
                 document.getElementById('loader').style.display = 'none';
 
-            } catch (err) { 
-                console.error("Errore critico durante l'avvio:", err);
-                loaderText.innerHTML = `<span style='color:#e74c3c'>ERRORE DI CONNESSIONE:<br>${err.message}</span><br><small>Verifica l'URL dello script o i permessi di accesso su Google.</small>`;
-                
+            } catch (err) {
+                console.error("Errore avvio:", err);
+                loaderText.innerHTML = `<span style='color:#e74c3c'>ERRORE DI CONNESSIONE:<br>${err.message}</span><br><small>Verifica l'URL dello script e i permessi di accesso.</small>`;
                 setTimeout(() => {
                     document.getElementById('loader').style.display = 'none';
                     if (document.querySelectorAll('#tableBody tr').length === 0) addRow();
@@ -260,11 +215,12 @@
             }
         };
 
+        // ─── AGGIUNGI RIGA ───────────────────────────────────────────────────────
         function addRow() {
             const id = Date.now();
             const tr = document.createElement('tr');
             tr.id = `row-${id}`;
-            
+
             let macroOptions = '<option value="">— Macro —</option>';
             if (DATA_STORE.mappatura) {
                 Object.keys(DATA_STORE.mappatura).sort().forEach(m => {
@@ -273,7 +229,7 @@
             }
 
             tr.innerHTML = `
-                <td><input type="text" class="m-fornitore" list="fornitore_list" placeholder="Cerca fornitore..." required></td>
+                <td><input type="text" class="m-fornitore" list="fornitore_list" placeholder="Cerca fornitore..."></td>
                 <td><select class="m-macro" onchange="updateMicro('${id}')" required>${macroOptions}</select></td>
                 <td>
                     <input type="text" class="m-micro" list="list-${id}" placeholder="Seleziona materiale..." required>
@@ -286,6 +242,7 @@
                         <option value="KG">KG</option>
                         <option value="ML">ML</option>
                         <option value="M">M</option>
+                        <option value="M²">M²</option>
                         <option value="T">T</option>
                         <option value="PZ">PZ</option>
                         <option value="ORE">ORE</option>
@@ -299,13 +256,12 @@
             document.getElementById('tableBody').appendChild(tr);
         }
 
+        // ─── AGGIORNA MICRO DA MACRO ─────────────────────────────────────────────
         function updateMicro(id) {
             const macroValue = document.querySelector(`#row-${id} .m-macro`).value;
             const microDatalist = document.getElementById(`list-${id}`);
             const microInput = document.querySelector(`#row-${id} .m-micro`);
-            
             microInput.value = "";
-            
             if (DATA_STORE.mappatura && DATA_STORE.mappatura[macroValue]) {
                 microDatalist.innerHTML = DATA_STORE.mappatura[macroValue]
                     .map(item => `<option value="${item}">`)
@@ -315,76 +271,86 @@
             }
         }
 
+        // ─── CALCOLO TOTALE ──────────────────────────────────────────────────────
         function calc() {
             let grandTotal = 0;
             document.querySelectorAll('#tableBody tr').forEach(tr => {
-                const qty = parseFloat(tr.querySelector('.m-qty').value) || 0;
+                const qty   = parseFloat(tr.querySelector('.m-qty').value)   || 0;
                 const price = parseFloat(tr.querySelector('.m-price').value) || 0;
                 grandTotal += qty * price;
             });
-            
             document.getElementById('grandTotal').innerText = '€ ' + grandTotal.toLocaleString('it-IT', {
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
+                minimumFractionDigits: 2, maximumFractionDigits: 2
             });
         }
 
+        // ─── RIMUOVI RIGA ────────────────────────────────────────────────────────
         function removeRow(id) {
             const row = document.getElementById(`row-${id}`);
             if (row) row.remove();
             calc();
         }
 
+        // ─── SUBMIT: salva ogni riga con tipo=salva_acquisto ─────────────────────
         document.getElementById('erpForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const msg = document.getElementById('statusMsg');
-            
-            btn.disabled = true; 
+
+            const cantiere = document.getElementById('cantiere').value;
+            if (!cantiere) {
+                msg.style.color = "#e74c3c";
+                msg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Seleziona un cantiere.';
+                return;
+            }
+
+            btn.disabled = true;
             msg.style.color = "#f39c12";
             msg.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrazione nel database in corso...';
 
-            try {
-                const rows = document.querySelectorAll('#tableBody tr');
-                const commonData = {
-                    data: document.getElementById('data').value,
-                    cantiere: document.getElementById('cantiere').value,
-                    status: document.getElementById('docStatus').value
-                };
+            const rows = document.querySelectorAll('#tableBody tr');
+            const commonData = {
+                data:     document.getElementById('data').value,
+                cantiere: cantiere,
+                status:   document.getElementById('docStatus').value
+            };
 
-                for (let tr of rows) {
-                    const q = parseFloat(tr.querySelector('.m-qty').value) || 0;
+            try {
+                for (const tr of rows) {
+                    const q = parseFloat(tr.querySelector('.m-qty').value)   || 0;
                     const p = parseFloat(tr.querySelector('.m-price').value) || 0;
-                    
-                    const payload = {
-                        ...commonData,
-                        fornitore: tr.querySelector('.m-fornitore').value,
-                        macro: tr.querySelector('.m-macro').value,
-                        micro: tr.querySelector('.m-micro').value,
-                        unit: tr.querySelector('.m-unit').value,
-                        qty: q.toFixed(5),
-                        price: p.toFixed(5),
-                        total: (q * p).toFixed(5),
-                        note: tr.querySelector('.m-note').value
-                    };
-                    
-                    await fetch(SCRIPT_URL, { 
-                        method: 'POST', 
-                        mode: 'no-cors', 
-                        body: JSON.stringify(payload) 
+
+                    const params = new URLSearchParams({
+                        tipo:             'salva_acquisto',
+                        data:             commonData.data,
+                        cantiere:         commonData.cantiere,
+                        status:           commonData.status,
+                        fornitore:        tr.querySelector('.m-fornitore').value,
+                        macro_categoria:  tr.querySelector('.m-macro').value,
+                        micro_categoria:  tr.querySelector('.m-micro').value,
+                        unit:             tr.querySelector('.m-unit').value,
+                        qty:              q.toFixed(5),
+                        prezzo_unitario:  p.toFixed(5),
+                        prezzo_totale:    (q * p).toFixed(5),
+                        note:             tr.querySelector('.m-note').value
+                    });
+
+                    // GET con no-cors: GAS risponde sempre 200, usiamo tipo=salva_acquisto
+                    await fetch(`${SCRIPT_URL}?${params.toString()}`, {
+                        method: 'GET',
+                        mode:   'no-cors'
                     });
                 }
-                
+
                 msg.style.color = "#27ae60";
                 msg.innerHTML = '<i class="fas fa-check-circle"></i> ACQUISTO REGISTRATO CON SUCCESSO!';
-                
-                setTimeout(() => location.reload(), 1500);
+                setTimeout(() => location.reload(), 1800);
 
-            } catch (err) { 
+            } catch (err) {
                 console.error("Errore salvataggio:", err);
                 msg.style.color = "#e74c3c";
-                msg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ERRORE DURANTE IL SALVATAGGIO!'; 
-                btn.disabled = false; 
+                msg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ERRORE DURANTE IL SALVATAGGIO!';
+                btn.disabled = false;
             }
         };
     </script>
