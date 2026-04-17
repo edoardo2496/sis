@@ -175,11 +175,28 @@ function addMat() {
     matCount++;
     const div = document.createElement('div');
     div.className = 'mat-item';
+    div.style.marginBottom = "15px"; // Spazio tra i materiali
     div.innerHTML = `
-        <div class="mat-header"><div class="mat-num">${matCount}</div><input type="text" class="m-desc" placeholder="Cosa serve?" style="border:none; background:none; font-weight:600; flex:1; outline:none"></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px;">
-            <div><label style="font-size:10px; font-weight:700; color:#999; text-transform:uppercase;">Quantità</label><input type="number" class="m-qty" value="1" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px;"></div>
-            <div><label style="font-size:10px; font-weight:700; color:#999; text-transform:uppercase;">Unità</label><select class="m-unit" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px;"><option>pz</option><option>kg</option><option>m</option><option>m³</option><option>lt</option></select></div>
+        <div class="mat-header" style="display:flex; align-items:center; padding:10px; background:#f8f9fa;">
+            <div class="mat-num" style="width:24px; height:24px; background:var(--blue); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; margin-right:10px; flex-shrink:0;">${matCount}</div>
+            <input type="text" class="m-desc" placeholder="Descrizione materiale (es. Cemento)..." 
+                style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px; outline:none; background:white;">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:12px; border-top:1px solid #eee;">
+            <div>
+                <label style="display:block; font-size:10px; font-weight:700; color:#6b7280; margin-bottom:4px; text-transform:uppercase;">Quantità</label>
+                <input type="number" class="m-qty" value="1" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px;">
+            </div>
+            <div>
+                <label style="display:block; font-size:10px; font-weight:700; color:#6b7280; margin-bottom:4px; text-transform:uppercase;">Unità</label>
+                <select class="m-unit" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; background:white;">
+                    <option>pz</option>
+                    <option>kg</option>
+                    <option>m</option>
+                    <option>m³</option>
+                    <option>lt</option>
+                </select>
+            </div>
         </div>`;
     document.getElementById('matList').appendChild(div);
 }
