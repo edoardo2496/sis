@@ -1,947 +1,270 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Edilcrema — RDA</title>
-<style>
-  :root {
-    --blue: #1a56db;
-    --blue-light: #e8f0fe;
-    --blue-mid: #4a7fd4;
-    --green: #0e7c4a;
-    --green-light: #e6f4ed;
-    --red: #c0392b;
-    --red-light: #fdecea;
-    --orange: #d35400;
-    --bg: #f0f2f5;
-    --white: #ffffff;
-    --text: #1a1f2e;
-    --text-muted: #6b7280;
-    --border: #dde2ea;
-    --border-focus: #1a56db;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  
-  html { font-size: 16px; }
-  
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    padding-bottom: 100px;
-  }
-
-  /* ── HEADER ── */
-  .header {
-    background: var(--white);
-    border-bottom: 2.5px solid var(--blue);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-
-  .logo {
-    width: 40px; height: 40px; flex-shrink: 0;
-    background: var(--blue);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .logo svg { width: 24px; height: 24px; }
-
-  .header-info { flex: 1; min-width: 0; }
-  .header-brand { font-size: 15px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; }
-  .header-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 1px; }
-
-  .rda-badge {
-    background: var(--blue-light);
-    color: var(--blue);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-  }
-
-  /* ── LAYOUT ── */
-  .app { max-width: 640px; margin: 0 auto; padding: 16px; }
-
-  /* ── STEP INDICATOR ── */
-  .steps {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    margin-bottom: 20px;
-    padding: 0 4px;
-  }
-  .step-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-  }
-  .step-dot {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    flex-shrink: 0;
-    transition: all 0.25s;
-  }
-  .step-dot.done { background: var(--green); color: #fff; }
-  .step-dot.active { background: var(--blue); color: #fff; box-shadow: 0 0 0 3px #c7d9f8; }
-  .step-dot.todo { background: var(--border); color: var(--text-muted); }
-  .step-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
-  .step-label.active { color: var(--blue); }
-  .step-label.done { color: var(--green); }
-  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; transition: background 0.25s; }
-  .step-line.done { background: var(--green); }
-
-  /* ── CARD ── */
-  .card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 14px;
-  }
-
-  .card-label {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--blue);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-  }
-  .card-label-icon {
-    width: 20px; height: 20px;
-    background: var(--blue-light);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .card-label-icon svg { width: 12px; height: 12px; }
-
-  /* ── FORM ── */
-  .field { margin-bottom: 14px; }
-  .field:last-child { margin-bottom: 0; }
-
-  .field label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-
-  .field input,
-  .field select,
-  .field textarea {
-    width: 100%;
-    padding: 13px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    color: var(--text);
-    background: var(--white);
-    -webkit-appearance: none;
-    appearance: none;
-    font-family: inherit;
-    transition: border-color 0.15s;
-    outline: none;
-  }
-  .field input:focus,
-  .field select:focus,
-  .field textarea:focus { border-color: var(--border-focus); }
-
-  .field input.error,
-  .field select.error { border-color: var(--red); background: var(--red-light); }
-
-  .field textarea { resize: none; min-height: 70px; }
-
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  /* select arrow */
-  .select-wrap { position: relative; }
-  .select-wrap::after {
-    content: '';
-    position: absolute;
-    right: 14px; top: 50%;
-    transform: translateY(-50%);
-    width: 0; height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 6px solid var(--text-muted);
-    pointer-events: none;
-  }
-
-  /* ── INFO ROW ── */
-  .info-row {
-    display: flex;
-    gap: 8px;
-    background: var(--blue-light);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    margin-bottom: 14px;
-    align-items: flex-start;
-  }
-  .info-row svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; color: var(--blue); }
-  .info-row span { font-size: 12px; color: var(--blue); line-height: 1.5; }
-
-  /* ── MATERIALI ── */
-  .mat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-
-  .mat-item {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-  }
-
-  .mat-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: #fafbfc;
-    border-bottom: 1px solid var(--border);
-  }
-  .mat-num {
-    width: 22px; height: 22px;
-    background: var(--blue);
-    color: white;
-    border-radius: 50%;
-    font-size: 11px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .mat-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
-  .mat-remove {
-    background: none; border: none; cursor: pointer;
-    width: 26px; height: 26px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 6px;
-    color: var(--text-muted);
-  }
-  .mat-remove:active { background: var(--red-light); color: var(--red); }
-
-  .mat-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-
-  .mat-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; align-items: end; }
-
-  .mat-body input,
-  .mat-body select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    color: var(--text);
-    background: var(--white);
-    -webkit-appearance: none;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .mat-body input:focus, .mat-body select:focus { border-color: var(--border-focus); }
-  .mat-body input.error { border-color: var(--red); background: var(--red-light); }
-
-  .mat-body label {
-    display: block;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: var(--text-muted);
-    margin-bottom: 5px;
-  }
-
-  .btn-add-mat {
-    width: 100%;
-    padding: 13px;
-    border: 2px dashed var(--blue-mid);
-    border-radius: var(--radius-sm);
-    background: none;
-    color: var(--blue);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    font-family: inherit;
-    transition: background 0.15s;
-  }
-  .btn-add-mat:active { background: var(--blue-light); }
-
-  /* ── NOTE ── */
-  .urgente-toggle {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    user-select: none;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .urgente-toggle.on {
-    border-color: var(--orange);
-    background: #fef3ec;
-  }
-  .toggle-box {
-    width: 42px; height: 24px;
-    border-radius: 12px;
-    background: var(--border);
-    position: relative;
-    flex-shrink: 0;
-    transition: background 0.2s;
-  }
-  .toggle-box::after {
-    content: '';
-    position: absolute;
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: white;
-    top: 3px; left: 3px;
-    transition: transform 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-  }
-  .urgente-toggle.on .toggle-box { background: var(--orange); }
-  .urgente-toggle.on .toggle-box::after { transform: translateX(18px); }
-  .toggle-label { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
-  .toggle-sub { font-size: 11px; color: var(--text-muted); }
-
-  /* ── RIEPILOGO ── */
-  .riepilogo-box {
-    background: var(--blue-light);
-    border: 1px solid #b8d0f7;
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    margin-bottom: 14px;
-  }
-  .riepilogo-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    font-size: 13px;
-    border-bottom: 1px solid #c8daf8;
-  }
-  .riepilogo-row:last-child { border-bottom: none; }
-  .riepilogo-key { color: var(--text-muted); }
-  .riepilogo-val { font-weight: 600; color: var(--text); }
-  .riepilogo-val.urgent { color: var(--orange); }
-
-  .mat-riepilogo { margin-top: 10px; }
-  .mat-rig {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 13px;
-    border-bottom: 1px solid #c8daf8;
-  }
-  .mat-rig:last-child { border-bottom: none; }
-  .mat-rig-name { color: var(--text); }
-  .mat-rig-qty { color: var(--text-muted); font-size: 12px; }
-
-  /* ── FOOTER ── */
-  .footer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--white);
-    border-top: 1px solid var(--border);
-    padding: 12px 20px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    z-index: 50;
-  }
-
-  .btn-back {
-    padding: 14px 18px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: none;
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    flex-shrink: 0;
-  }
-  .btn-back:active { background: var(--bg); }
-
-  .btn-next {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: var(--blue);
-    color: white;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: background 0.15s;
-  }
-  .btn-next:active { background: #1248b3; }
-  .btn-next:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
-
-  .btn-submit {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: var(--green);
-    color: white;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: background 0.15s;
-  }
-  .btn-submit:active { background: #085c36; }
-  .btn-submit:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
-
-  /* ── SUCCESS ── */
-  .success-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    text-align: center;
-    padding: 20px;
-  }
-  .success-icon {
-    width: 72px; height: 72px;
-    background: var(--green-light);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 20px;
-  }
-  .success-icon svg { width: 36px; height: 36px; color: var(--green); }
-  .success-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
-  .success-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
-  .success-rda { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 24px; }
-  .btn-nuova {
-    padding: 14px 32px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-  }
-
-  /* ── SPINNER ── */
-  .spinner {
-    width: 20px; height: 20px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── LOADER INIT ── */
-  .loader-init {
-    position: fixed; inset: 0;
-    background: var(--white);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 999;
-    gap: 12px;
-  }
-  .loader-init .spinner { border-color: #dde2ea; border-top-color: var(--blue); width: 28px; height: 28px; }
-  .loader-init span { font-size: 12px; color: var(--text-muted); }
-
-  /* utility */
-  .hidden { display: none !important; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Edilcrema — RDA</title>
+    <style>
+        /* Mantengo i tuoi stili originali che sono ottimi */
+        :root {
+            --blue: #1a56db; --blue-light: #e8f0fe; --blue-mid: #4a7fd4;
+            --green: #0e7c4a; --green-light: #e6f4ed; --red: #c0392b;
+            --red-light: #fdecea; --orange: #d35400; --bg: #f0f2f5;
+            --white: #ffffff; --text: #1a1f2e; --text-muted: #6b7280;
+            --border: #dde2ea; --border-focus: #1a56db; --radius: 12px; --radius-sm: 8px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; padding-bottom: 100px; }
+        .header { background: var(--white); border-bottom: 2.5px solid var(--blue); padding: 14px 20px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 50; }
+        .logo { width: 40px; height: 40px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .logo svg { width: 24px; height: 24px; }
+        .header-brand { font-size: 15px; font-weight: 800; color: var(--blue); text-transform: uppercase; }
+        .rda-badge { background: var(--blue-light); color: var(--blue); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .app { max-width: 640px; margin: 0 auto; padding: 16px; }
+        .steps { display: flex; align-items: center; margin-bottom: 20px; padding: 0 4px; }
+        .step-item { display: flex; align-items: center; gap: 6px; flex: 1; }
+        .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: 0.25s; }
+        .step-dot.active { background: var(--blue); color: #fff; box-shadow: 0 0 0 3px #c7d9f8; }
+        .step-dot.done { background: var(--green); color: #fff; }
+        .step-dot.todo { background: var(--border); color: var(--text-muted); }
+        .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; }
+        .step-line.done { background: var(--green); }
+        .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; }
+        .card-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+        .field { margin-bottom: 14px; }
+        .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+        .field input, .field select, .field textarea { width: 100%; padding: 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; outline: none; }
+        .field input:focus, .field select:focus { border-color: var(--blue); }
+        .mat-item { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; overflow: hidden; }
+        .mat-header { display: flex; align-items: center; padding: 10px; background: #fafbfc; border-bottom: 1px solid var(--border); }
+        .mat-num { width: 22px; height: 22px; background: var(--blue); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-right: 10px; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 10px; z-index: 50; }
+        .btn-next, .btn-submit { flex: 1; padding: 14px; border: none; border-radius: var(--radius-sm); background: var(--blue); color: white; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-back { padding: 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: none; color: var(--text-muted); font-weight: 700; }
+        .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
+        .loader-init { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+    </style>
 </head>
 <body>
 
 <div class="loader-init" id="initLoader">
-  <div class="spinner"></div>
-  <span>Caricamento...</span>
+    <div class="spinner" style="border-top-color: var(--blue)"></div>
+    <span style="margin-top:10px; color: var(--text-muted)">Caricamento liste...</span>
 </div>
 
-<!-- ══ HEADER ══ -->
 <header class="header">
-  <div class="logo">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 21L12 5L21 21H3Z" fill="white" opacity="0.9"/>
-      <path d="M7 21V14H17V21" fill="white" opacity="0.5"/>
-    </svg>
-  </div>
-  <div class="header-info">
-    <div class="header-brand">Edilcrema</div>
-    <div class="header-sub">Richiesta di acquisto</div>
-  </div>
-  <div class="rda-badge" id="badgeRda">RDA-···</div>
+    <div class="logo"><svg viewBox="0 0 24 24" fill="white"><path d="M3 21L12 5L21 21H3Z" opacity="0.9"/><path d="M7 21V14H17V21" opacity="0.5"/></svg></div>
+    <div style="flex:1">
+        <div class="header-brand">Edilcrema</div>
+        <div style="font-size:11px; color:var(--text-muted)">Richiesta di acquisto</div>
+    </div>
+    <div class="rda-badge" id="badgeRda">RDA-CALC...</div>
 </header>
 
-<!-- ══ APP ══ -->
 <div class="app">
-
-  <!-- STEP INDICATOR -->
-  <div class="steps">
-    <div class="step-item">
-      <div class="step-dot active" id="dot1">1</div>
-      <div class="step-label active" id="lbl1">Intestazione</div>
+    <div class="steps">
+        <div class="step-item"><div class="step-dot active" id="dot1">1</div></div>
+        <div class="step-line" id="line12"></div>
+        <div class="step-item"><div class="step-dot todo" id="dot2">2</div></div>
+        <div class="step-line" id="line23"></div>
+        <div class="step-item"><div class="step-dot todo" id="dot3">3</div></div>
     </div>
-    <div class="step-line" id="line12"></div>
-    <div class="step-item">
-      <div class="step-dot todo" id="dot2">2</div>
-      <div class="step-label" id="lbl2">Materiali</div>
-    </div>
-    <div class="step-line" id="line23"></div>
-    <div class="step-item">
-      <div class="step-dot todo" id="dot3">3</div>
-      <div class="step-label" id="lbl3">Conferma</div>
-    </div>
-  </div>
 
-  <!-- ── STEP 1: INTESTAZIONE ── -->
-  <div id="step1">
-
-    <div class="card">
-      <div class="card-label">
-        <div class="card-label-icon">
-          <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="#1a56db" stroke-width="1.5"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#1a56db" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div id="step1">
+        <div class="card">
+            <div class="card-label">Identità e Destinazione</div>
+            <div class="field">
+                <label>Richiedente *</label>
+                <select id="richiedente">
+                    <option value="">Seleziona...</option>
+                    <option value="Zio Ernesto">Zio Ernesto</option>
+                    <option value="Capocantiere Mario">Capocantiere Mario</option>
+                    <option value="Capocantiere Luca">Capocantiere Luca</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Cantiere *</label>
+                <select id="cantiere"><option>Caricamento...</option></select>
+            </div>
+            <div class="field">
+                <label>Fornitore Suggerito (Opzionale)</label>
+                <select id="fornitore"><option>Caricamento...</option></select>
+            </div>
         </div>
-        Richiedente
-      </div>
-
-      <div class="field">
-        <label>Chi fa la richiesta *</label>
-        <div class="select-wrap">
-          <select id="richiedente">
-            <option value="">Seleziona richiedente...</option>
-            <option value="Zio Ernesto">Zio Ernesto</option>
-            <option value="Capocantiere Mario">Capocantiere Mario</option>
-            <option value="Capocantiere Luca">Capocantiere Luca</option>
-          </select>
+        <div class="card">
+            <div class="card-label">Logistica</div>
+            <div class="field">
+                <label>Consegna entro il *</label>
+                <input type="date" id="dataConsegna">
+            </div>
         </div>
-      </div>
     </div>
 
-    <div class="card">
-      <div class="card-label">
-        <div class="card-label-icon">
-          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="#1a56db" stroke-width="1.5"/><path d="M5 8h6M5 5h3M5 11h4" stroke="#1a56db" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <div id="step2" class="hidden">
+        <div class="card">
+            <div class="card-label">Materiali</div>
+            <div id="matList"></div>
+            <button onclick="addMat()" class="btn-add-mat" style="width:100%; padding:12px; border:2px dashed var(--blue-mid); border-radius:8px; background:none; color:var(--blue); font-weight:700; margin-top:10px;">+ Aggiungi materiale</button>
         </div>
-        Dove e quando
-      </div>
-
-      <div class="field">
-        <label>Cantiere di destinazione *</label>
-        <div class="select-wrap">
-          <select id="cantiere">
-            <option value="">Scegli cantiere...</option>
-            <option value="Sede Crema">Sede Crema</option>
-            <option value="Cantiere Milano">Cantiere Milano</option>
-            <option value="Cantiere Lodi">Cantiere Lodi</option>
-          </select>
+        <div class="card">
+            <div class="field">
+                <label>Note aggiuntive</label>
+                <textarea id="note" placeholder="es. Marca specifica, urgenza, note per scarico..."></textarea>
+            </div>
         </div>
-      </div>
-
-      <div class="field">
-        <label>Consegna entro il *</label>
-        <input type="date" id="dataConsegna">
-      </div>
     </div>
 
-  </div>
-
-  <!-- ── STEP 2: MATERIALI ── -->
-  <div id="step2" class="hidden">
-
-    <div class="card">
-      <div class="card-label">
-        <div class="card-label-icon">
-          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="12" height="5" rx="1.5" stroke="#1a56db" stroke-width="1.4"/><path d="M5 9V5a3 3 0 016 0v4" stroke="#1a56db" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <div id="step3" class="hidden">
+        <div class="card">
+            <div class="card-label">Riepilogo e Firma</div>
+            <div id="riepilogoBox" style="font-size:13px; line-height:1.6; background:var(--blue-light); padding:15px; border-radius:8px; margin-bottom:15px;"></div>
+            <div class="field">
+                <label>Firma (Tuo Nome e Cognome) *</label>
+                <input type="text" id="firma" placeholder="Nome Cognome">
+            </div>
         </div>
-        Materiali richiesti
-      </div>
-
-      <div class="info-row">
-        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#1a56db" stroke-width="1.3"/><path d="M8 7v5M8 5v.5" stroke="#1a56db" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span>Scrivi cosa serve. Il prezzo lo stabiliamo noi in ufficio — tu indica solo quantità e unità.</span>
-      </div>
-
-      <div class="mat-list" id="matList"></div>
-
-      <button class="btn-add-mat" onclick="addMat()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#1a56db" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="#1a56db" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Aggiungi materiale
-      </button>
     </div>
 
-    <div class="card">
-      <div class="card-label">
-        <div class="card-label-icon">
-          <svg viewBox="0 0 16 16" fill="none"><path d="M8 2l1.8 3.6L14 6.3l-3 2.9.7 4.1L8 11.5l-3.7 1.9.7-4.1-3-2.9 4.2-.7z" stroke="#1a56db" stroke-width="1.3" stroke-linejoin="round"/></svg>
-        </div>
-        Priorità e note
-      </div>
-
-      <div class="urgente-toggle" id="urgenteToggle" onclick="toggleUrgente()">
-        <div class="toggle-box" id="toggleBox"></div>
-        <div>
-          <div class="toggle-label">Richiesta urgente</div>
-          <div class="toggle-sub">Segnala se serve prima della data indicata</div>
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:14px">
-        <label>Note aggiuntive</label>
-        <textarea id="note" placeholder="Specifiche tecniche, dimensioni, marca preferita..."></textarea>
-      </div>
+    <div id="successScreen" class="hidden" style="text-align:center; padding:40px 20px;">
+        <div style="font-size:50px;">✅</div>
+        <h2 style="margin-top:20px">Inviata con successo</h2>
+        <p id="successRda" style="color:var(--blue); font-weight:700; margin-top:10px;"></p>
+        <button onclick="location.reload()" class="btn-next" style="margin-top:30px">Nuova RDA</button>
     </div>
-
-  </div>
-
-  <!-- ── STEP 3: RIEPILOGO ── -->
-  <div id="step3" class="hidden">
-
-    <div class="card">
-      <div class="card-label">
-        <div class="card-label-icon">
-          <svg viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h7M3 11h5" stroke="#1a56db" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
-        Riepilogo richiesta
-      </div>
-
-      <div class="riepilogo-box" id="riepilogoBox"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">
-        <div class="card-label-icon">
-          <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v4l3 1.5" stroke="#1a56db" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9" r="6" stroke="#1a56db" stroke-width="1.4"/></svg>
-        </div>
-        Firma e invio
-      </div>
-
-      <div class="info-row">
-        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#1a56db" stroke-width="1.3"/><path d="M8 7v5M8 5v.5" stroke="#1a56db" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span>Controlla i dati prima di inviare. Una volta confermata, la RDA verrà registrata su Google Sheets e presa in carico dall'ufficio acquisti.</span>
-      </div>
-
-      <div class="field">
-        <label>Confermato da *</label>
-        <input type="text" id="firma" placeholder="Il tuo nome e cognome" autocomplete="name">
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ── SUCCESS ── -->
-  <div class="success-screen" id="successScreen">
-    <div class="success-icon">
-      <svg viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="#0e7c4a" stroke-width="2"/><path d="M10 18l6 6 10-12" stroke="#0e7c4a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <div class="success-title">Richiesta inviata!</div>
-    <div class="success-sub">La RDA è stata registrata correttamente.</div>
-    <div class="success-rda" id="successRda"></div>
-    <button class="btn-nuova" onclick="nuovaRda()">Nuova richiesta</button>
-  </div>
-
 </div>
 
-<!-- ══ FOOTER ══ -->
 <div class="footer" id="footer">
-  <button class="btn-back hidden" id="btnBack" onclick="goBack()">← Indietro</button>
-  <button class="btn-next" id="btnNext" onclick="goNext()">
-    Continua <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
+    <button class="btn-back hidden" id="btnBack" onclick="goBack()">Indietro</button>
+    <button class="btn-next" id="btnNext" onclick="goNext()">Continua</button>
 </div>
 
 <script>
-const SCRIPT_URL = "IL_TUO_URL_DI_GOOGLE_SHEETS";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJFhCpTMnUJ1gLpV2GSSCIJVCtznzPy1bL1fRTe1tLGOxF1D7jhlV45KBAC-XN-nJM/exec";
 
 let currentStep = 1;
-let urgenteOn = false;
 let matCount = 0;
-let rdaCode = '';
 
-// ── genera codice RDA ──
-function genRda() {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(2);
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const rand = String(Math.floor(Math.random() * 900) + 100);
-  return `RDA-${yy}${mm}-${rand}`;
+// Caricamento Liste Dinamiche
+async function loadLists() {
+    try {
+        const [resCant, resForn] = await Promise.all([
+            fetch(`${SCRIPT_URL}?tipo=cantieri`),
+            fetch(`${SCRIPT_URL}?tipo=fornitori`)
+        ]);
+        const cantieri = await resCant.json();
+        const fornitori = await resForn.json();
+
+        const selC = document.getElementById('cantiere');
+        const selF = document.getElementById('fornitore');
+        
+        selC.innerHTML = '<option value="">Scegli cantiere...</option>';
+        cantieri.forEach(c => selC.innerHTML += `<option value="${c}">${c}</option>`);
+        
+        selF.innerHTML = '<option value="">Opzionale (Scegli fornitore)...</option>';
+        fornitori.forEach(f => selF.innerHTML += `<option value="${f}">${f}</option>`);
+
+        document.getElementById('initLoader').classList.add('hidden');
+    } catch (e) {
+        alert("Errore nel caricamento dei dati dal foglio.");
+    }
 }
 
-// ── aggiorna step UI ──
-function setStep(n) {
-  currentStep = n;
-  [1, 2, 3].forEach(i => {
-    const dot = document.getElementById('dot' + i);
-    const lbl = document.getElementById('lbl' + i);
-    dot.className = 'step-dot ' + (i < n ? 'done' : i === n ? 'active' : 'todo');
-    dot.textContent = i < n ? '✓' : i;
-    lbl.className = 'step-label' + (i < n ? ' done' : i === n ? ' active' : '');
-  });
-  ['line12', 'line23'].forEach((id, idx) => {
-    document.getElementById(id).className = 'step-line' + (n > idx + 2 ? ' done' : '');
-  });
-  document.getElementById('step1').classList.toggle('hidden', n !== 1);
-  document.getElementById('step2').classList.toggle('hidden', n !== 2);
-  document.getElementById('step3').classList.toggle('hidden', n !== 3);
-  document.getElementById('btnBack').classList.toggle('hidden', n === 1);
-  const btnNext = document.getElementById('btnNext');
-  if (n < 3) {
-    btnNext.innerHTML = 'Continua <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    btnNext.className = 'btn-next';
-    btnNext.onclick = goNext;
-  } else {
-    btnNext.innerHTML = '<span>Invia RDA</span>';
-    btnNext.className = 'btn-submit';
-    btnNext.onclick = invia;
-  }
-  window.scrollTo(0, 0);
-}
-
-// ── aggiungi materiale ──
 function addMat() {
-  matCount++;
-  const id = 'mat' + matCount;
-  const div = document.createElement('div');
-  div.className = 'mat-item';
-  div.id = id;
-  div.innerHTML = `
-    <div class="mat-header">
-      <div class="mat-num">${matCount}</div>
-      <div class="mat-title" id="title${id}">Materiale ${matCount}</div>
-      <button class="mat-remove" onclick="removeMat('${id}')">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-    <div class="mat-body">
-      <div>
-        <label>Descrizione *</label>
-        <input type="text" class="m-desc" placeholder="es. Ferro 10mm, Mattoni rossi..." oninput="updateMatTitle('${id}', this.value)">
-      </div>
-      <div class="mat-row">
-        <div>
-          <label>Quantità *</label>
-          <input type="number" class="m-qty" placeholder="0" min="0" step="any">
-        </div>
-        <div>
-          <label>Unità</label>
-          <div style="position:relative">
-            <select class="m-unit" style="padding-right:28px">
-              <option value="pz">pz</option>
-              <option value="kg">kg</option>
-              <option value="m">m</option>
-              <option value="m²">m²</option>
-              <option value="m³">m³</option>
-              <option value="lt">lt</option>
-              <option value="sac">sac</option>
-              <option value="rot">rot</option>
-            </select>
-            <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #6b7280"></div>
-          </div>
-        </div>
-        <div>
-          <label>Cat.</label>
-          <div style="position:relative">
-            <select class="m-cat" style="padding-right:28px">
-              <option value="">—</option>
-              <option value="Cls/Cal">Cls/Cal</option>
-              <option value="Ferro">Ferro</option>
-              <option value="Legno">Legno</option>
-              <option value="Idraul.">Idraul.</option>
-              <option value="Elettr.">Elettr.</option>
-              <option value="Altro">Altro</option>
-            </select>
-            <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #6b7280"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.getElementById('matList').appendChild(div);
+    matCount++;
+    const div = document.createElement('div');
+    div.className = 'mat-item';
+    div.innerHTML = `
+        <div class="mat-header"><div class="mat-num">${matCount}</div><input type="text" class="m-desc" placeholder="Descrizione materiale..." style="border:none; background:none; font-weight:600; flex:1; outline:none"></div>
+        <div class="mat-body" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div><label>Quantità</label><input type="number" class="m-qty" value="1"></div>
+            <div><label>Unità</label><select class="m-unit"><option>pz</option><option>kg</option><option>m</option><option>m³</option><option>lt</option></select></div>
+        </div>`;
+    document.getElementById('matList').appendChild(div);
 }
 
-function removeMat(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
-}
-
-function updateMatTitle(id, val) {
-  const t = document.getElementById('title' + id);
-  if (t) t.textContent = val.trim() || ('Materiale');
-}
-
-function toggleUrgente() {
-  urgenteOn = !urgenteOn;
-  document.getElementById('urgenteToggle').classList.toggle('on', urgenteOn);
-}
-
-// ── validazione step 1 ──
-function validateStep1() {
-  let ok = true;
-  const rich = document.getElementById('richiedente');
-  const cant = document.getElementById('cantiere');
-  const data = document.getElementById('dataConsegna');
-  [rich, cant, data].forEach(el => el.classList.remove('error'));
-  if (!rich.value) { rich.classList.add('error'); ok = false; }
-  if (!cant.value) { cant.classList.add('error'); ok = false; }
-  if (!data.value) { data.classList.add('error'); ok = false; }
-  return ok;
-}
-
-// ── validazione step 2 ──
-function validateStep2() {
-  const items = document.querySelectorAll('.mat-item');
-  if (items.length === 0) { alert('Aggiungi almeno un materiale.'); return false; }
-  let ok = true;
-  items.forEach(item => {
-    const desc = item.querySelector('.m-desc');
-    const qty = item.querySelector('.m-qty');
-    desc.classList.remove('error'); qty.classList.remove('error');
-    if (!desc.value.trim()) { desc.classList.add('error'); ok = false; }
-    if (!qty.value || parseFloat(qty.value) <= 0) { qty.classList.add('error'); ok = false; }
-  });
-  return ok;
-}
-
-// ── costruisci riepilogo ──
-function buildRiepilogo() {
-  const rich = document.getElementById('richiedente').value;
-  const cant = document.getElementById('cantiere').value;
-  const data = document.getElementById('dataConsegna').value;
-  const note = document.getElementById('note').value.trim();
-  const dateFormatted = new Date(data + 'T00:00:00').toLocaleDateString('it-IT', {day:'2-digit', month:'long', year:'numeric'});
-
-  const items = document.querySelectorAll('.mat-item');
-  let matsHtml = '<div class="mat-riepilogo">';
-  items.forEach(item => {
-    const desc = item.querySelector('.m-desc').value.trim();
-    const qty = item.querySelector('.m-qty').value;
-    const unit = item.querySelector('.m-unit').value;
-    const cat = item.querySelector('.m-cat').value;
-    matsHtml += `<div class="mat-rig"><span class="mat-rig-name">${desc}${cat ? ' <span style="font-size:11px;color:#6b7280">[${cat}]</span>' : ''}</span><span class="mat-rig-qty">${qty} ${unit}</span></div>`;
-  });
-  matsHtml += '</div>';
-
-  document.getElementById('riepilogoBox').innerHTML = `
-    <div class="riepilogo-row"><span class="riepilogo-key">Codice RDA</span><span class="riepilogo-val" style="color:var(--blue)">${rdaCode}</span></div>
-    <div class="riepilogo-row"><span class="riepilogo-key">Richiedente</span><span class="riepilogo-val">${rich}</span></div>
-    <div class="riepilogo-row"><span class="riepilogo-key">Cantiere</span><span class="riepilogo-val">${cant}</span></div>
-    <div class="riepilogo-row"><span class="riepilogo-key">Consegna entro</span><span class="riepilogo-val">${dateFormatted}</span></div>
-    <div class="riepilogo-row"><span class="riepilogo-key">Priorità</span><span class="riepilogo-val ${urgenteOn ? 'urgent' : ''}">${urgenteOn ? 'URGENTE' : 'Normale'}</span></div>
-    ${note ? `<div class="riepilogo-row"><span class="riepilogo-key">Note</span><span class="riepilogo-val" style="font-size:12px">${note}</span></div>` : ''}
-    <div class="riepilogo-row" style="border-bottom:none"><span class="riepilogo-key">Materiali (${items.length})</span></div>
-    ${matsHtml}
-  `;
-}
-
-// ── navigazione ──
 function goNext() {
-  if (currentStep === 1) {
-    if (!validateStep1()) return;
-    setStep(2);
-    if (document.querySelectorAll('.mat-item').length === 0) addMat();
-  } else if (currentStep === 2) {
-    if (!validateStep2()) return;
-    buildRiepilogo();
-    setStep(3);
-  }
+    if (currentStep === 1) {
+        if (!document.getElementById('cantiere').value || !document.getElementById('dataConsegna').value) return alert("Compila i campi obbligatori!");
+        setStep(2);
+        if (matCount === 0) addMat();
+    } else if (currentStep === 2) {
+        setStep(3);
+        renderRiepilogo();
+    } else if (currentStep === 3) {
+        inviaDati();
+    }
 }
 
-function goBack() {
-  if (currentStep > 1) setStep(currentStep - 1);
+function setStep(n) {
+    currentStep = n;
+    document.getElementById('step1').classList.toggle('hidden', n !== 1);
+    document.getElementById('step2').classList.toggle('hidden', n !== 2);
+    document.getElementById('step3').classList.toggle('hidden', n !== 3);
+    document.getElementById('btnBack').classList.toggle('hidden', n === 1);
+    document.getElementById('btnNext').textContent = n === 3 ? "Conferma e Genera PDF" : "Continua";
+    document.getElementById('dot2').className = `step-dot ${n >= 2 ? 'active' : 'todo'}`;
+    document.getElementById('dot3').className = `step-dot ${n === 3 ? 'active' : 'todo'}`;
 }
 
-// ── invio ──
-async function invia() {
-  const firma = document.getElementById('firma').value.trim();
-  if (!firma) {
-    document.getElementById('firma').classList.add('error');
-    return;
-  }
+function renderRiepilogo() {
+    const c = document.getElementById('cantiere').value;
+    const d = document.getElementById('dataConsegna').value;
+    const mats = document.querySelectorAll('.mat-item').length;
+    document.getElementById('riepilogoBox').innerHTML = `
+        <strong>Cantiere:</strong> ${c}<br>
+        <strong>Consegna richiesta:</strong> ${d}<br>
+        <strong>Materiali in lista:</strong> ${mats} articoli`;
+}
 
-  const btn = document.getElementById('btnNext');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Invio in corso...';
+async function inviaDati() {
+    const firma = document.getElementById('firma').value.trim();
+    if (!firma) return alert("Inserisci la firma per procedere!");
 
-  const timestamp = new Date().toLocaleString('it-IT');
-  const items = document.querySelectorAll('.mat-item');
+    const btn = document.getElementById('btnNext');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Invio e Generazione PDF...';
 
-  try {
-    for (let item of items) {
-      const payload = {
-        tipo: 'rda',
-        rda_code: rdaCode,
-        timestamp,
+    const materiali = Array.from(document.querySelectorAll('.mat-item')).map(item => ({
+        descrizione: item.querySelector('.m-desc').value || "Senza descrizione",
+        quantita: item.querySelector('.m-qty').value,
+        unita: item.querySelector('.m-unit').value
+    }));
+
+    const payload = {
         richiedente: document.getElementById('richiedente').value,
         cantiere: document.getElementById('cantiere').value,
+        fornitore: document.getElementById('fornitore').value,
         data_consegna: document.getElementById('dataConsegna').value,
-        urgente: urgenteOn ? 'SI' : 'NO',
-        note: document.getElementById('note').value.trim(),
-        firma,
-        materiale: item.querySelector('.m-desc').value.trim(),
-        quantita: item.querySelector('.m-qty').value,
-        unita: item.querySelector('.m-unit').value,
-        categoria: item.querySelector('.m-cat').value
-      };
-      await fetch(SCRIPT_URL + '?' + new URLSearchParams(payload));
+        note: document.getElementById('note').value,
+        firma: firma,
+        materiali: materiali
+    };
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.ok) {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('footer').classList.add('hidden');
+            document.getElementById('successScreen').classList.remove('hidden');
+            document.getElementById('successRda').textContent = "Codice assegnato: " + result.rda;
+        }
+    } catch (e) {
+        alert("Errore nell'invio. Verifica che il backend sia pubblicato correttamente.");
+        btn.disabled = false;
+        btn.textContent = "Riprova Inviata";
     }
-    // successo
-    document.querySelector('.app').style.display = 'none';
-    document.getElementById('footer').style.display = 'none';
-    document.getElementById('successScreen').style.display = 'flex';
-    document.getElementById('successRda').textContent = rdaCode;
-  } catch(e) {
-    alert('Errore durante l\'invio. Riprova.');
-    btn.disabled = false;
-    btn.innerHTML = '<span>Invia RDA</span>';
-    btn.className = 'btn-submit';
-    btn.onclick = invia;
-  }
 }
 
-function nuovaRda() {
-  location.reload();
-}
+function goBack() { if (currentStep > 1) setStep(currentStep - 1); }
 
-// ── init ──
-window.onload = () => {
-  rdaCode = genRda();
-  document.getElementById('badgeRda').textContent = rdaCode;
-  const today = new Date();
-  const min = today.toISOString().split('T')[0];
-  document.getElementById('dataConsegna').min = min;
-  setTimeout(() => {
-    document.getElementById('initLoader').style.display = 'none';
-  }, 400);
-};
+window.onload = loadLists;
 </script>
 </body>
 </html>
-
