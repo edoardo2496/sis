@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Edilcrema — RDA</title>
     <style>
-        /* Mantengo i tuoi stili originali che sono ottimi */
         :root {
             --blue: #1a56db; --blue-light: #e8f0fe; --blue-mid: #4a7fd4;
             --green: #0e7c4a; --green-light: #e6f4ed; --red: #c0392b;
@@ -25,21 +24,19 @@
         .step-item { display: flex; align-items: center; gap: 6px; flex: 1; }
         .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: 0.25s; }
         .step-dot.active { background: var(--blue); color: #fff; box-shadow: 0 0 0 3px #c7d9f8; }
-        .step-dot.done { background: var(--green); color: #fff; }
         .step-dot.todo { background: var(--border); color: var(--text-muted); }
         .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; }
-        .step-line.done { background: var(--green); }
         .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; }
         .card-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
         .field { margin-bottom: 14px; }
         .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
-        .field input, .field select, .field textarea { width: 100%; padding: 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; outline: none; }
+        .field input, .field select, .field textarea { width: 100%; padding: 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; outline: none; background: white; }
         .field input:focus, .field select:focus { border-color: var(--blue); }
         .mat-item { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; overflow: hidden; }
         .mat-header { display: flex; align-items: center; padding: 10px; background: #fafbfc; border-bottom: 1px solid var(--border); }
         .mat-num { width: 22px; height: 22px; background: var(--blue); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-right: 10px; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 10px; z-index: 50; }
-        .btn-next, .btn-submit { flex: 1; padding: 14px; border: none; border-radius: var(--radius-sm); background: var(--blue); color: white; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-next { flex: 1; padding: 14px; border: none; border-radius: var(--radius-sm); background: var(--blue); color: white; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-back { padding: 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: none; color: var(--text-muted); font-weight: 700; }
         .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -51,7 +48,7 @@
 
 <div class="loader-init" id="initLoader">
     <div class="spinner" style="border-top-color: var(--blue)"></div>
-    <span style="margin-top:10px; color: var(--text-muted)">Caricamento liste...</span>
+    <span style="margin-top:10px; color: var(--text-muted)">Caricamento database...</span>
 </div>
 
 <header class="header">
@@ -60,7 +57,7 @@
         <div class="header-brand">Edilcrema</div>
         <div style="font-size:11px; color:var(--text-muted)">Richiesta di acquisto</div>
     </div>
-    <div class="rda-badge" id="badgeRda">RDA-CALC...</div>
+    <div class="rda-badge" id="badgeRda">NUOVA RDA</div>
 </header>
 
 <div class="app">
@@ -90,8 +87,9 @@
                 <select id="cantiere"><option>Caricamento...</option></select>
             </div>
             <div class="field">
-                <label>Fornitore Suggerito (Opzionale)</label>
-                <select id="fornitore"><option>Caricamento...</option></select>
+                <label>Fornitore (Scrivi per suggerimento)</label>
+                <input type="text" id="fornitore" list="listaFornitori" placeholder="Inizia a scrivere il nome...">
+                <datalist id="listaFornitori"></datalist>
             </div>
         </div>
         <div class="card">
@@ -107,32 +105,33 @@
         <div class="card">
             <div class="card-label">Materiali</div>
             <div id="matList"></div>
-            <button onclick="addMat()" class="btn-add-mat" style="width:100%; padding:12px; border:2px dashed var(--blue-mid); border-radius:8px; background:none; color:var(--blue); font-weight:700; margin-top:10px;">+ Aggiungi materiale</button>
+            <button onclick="addMat()" style="width:100%; padding:12px; border:2px dashed var(--blue-mid); border-radius:8px; background:none; color:var(--blue); font-weight:700; margin-top:10px; cursor:pointer;">+ Aggiungi materiale</button>
         </div>
         <div class="card">
             <div class="field">
                 <label>Note aggiuntive</label>
-                <textarea id="note" placeholder="es. Marca specifica, urgenza, note per scarico..."></textarea>
+                <textarea id="note" rows="3" placeholder="es. Marca specifica, urgenza, note per scarico..."></textarea>
             </div>
         </div>
     </div>
 
     <div id="step3" class="hidden">
         <div class="card">
-            <div class="card-label">Riepilogo e Firma</div>
-            <div id="riepilogoBox" style="font-size:13px; line-height:1.6; background:var(--blue-light); padding:15px; border-radius:8px; margin-bottom:15px;"></div>
+            <div class="card-label">Riepilogo e Invio</div>
+            <div id="riepilogoBox" style="font-size:14px; line-height:1.6; background:var(--blue-light); padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid var(--blue-mid);"></div>
             <div class="field">
-                <label>Firma (Tuo Nome e Cognome) *</label>
-                <input type="text" id="firma" placeholder="Nome Cognome">
+                <label>Conferma Nome per Firma *</label>
+                <input type="text" id="firma" placeholder="Nome e Cognome">
             </div>
         </div>
     </div>
 
     <div id="successScreen" class="hidden" style="text-align:center; padding:40px 20px;">
-        <div style="font-size:50px;">✅</div>
-        <h2 style="margin-top:20px">Inviata con successo</h2>
-        <p id="successRda" style="color:var(--blue); font-weight:700; margin-top:10px;"></p>
-        <button onclick="location.reload()" class="btn-next" style="margin-top:30px">Nuova RDA</button>
+        <div style="font-size:60px;">✅</div>
+        <h2 style="margin-top:20px">RDA Inviata!</h2>
+        <p style="color:var(--text-muted); margin-top:10px;">Il PDF è stato generato e salvato su Drive.</p>
+        <p id="successRda" style="color:var(--blue); font-weight:800; font-size:20px; margin-top:15px;"></p>
+        <button onclick="location.reload()" class="btn-next" style="margin-top:30px">Nuova Richiesta</button>
     </div>
 </div>
 
@@ -142,12 +141,12 @@
 </div>
 
 <script>
+// NOTA: Aggiorna questo URL con quello della tua Web App pubblicata
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJFhCpTMnUJ1gLpV2GSSCIJVCtznzPy1bL1fRTe1tLGOxF1D7jhlV45KBAC-XN-nJM/exec";
 
 let currentStep = 1;
 let matCount = 0;
 
-// Caricamento Liste Dinamiche
 async function loadLists() {
     try {
         const [resCant, resForn] = await Promise.all([
@@ -158,17 +157,17 @@ async function loadLists() {
         const fornitori = await resForn.json();
 
         const selC = document.getElementById('cantiere');
-        const selF = document.getElementById('fornitore');
+        const dlF = document.getElementById('listaFornitori');
         
         selC.innerHTML = '<option value="">Scegli cantiere...</option>';
         cantieri.forEach(c => selC.innerHTML += `<option value="${c}">${c}</option>`);
         
-        selF.innerHTML = '<option value="">Opzionale (Scegli fornitore)...</option>';
-        fornitori.forEach(f => selF.innerHTML += `<option value="${f}">${f}</option>`);
+        dlF.innerHTML = '';
+        fornitori.forEach(f => dlF.innerHTML += `<option value="${f}">`);
 
         document.getElementById('initLoader').classList.add('hidden');
     } catch (e) {
-        alert("Errore nel caricamento dei dati dal foglio.");
+        alert("Errore nel caricamento dei dati. Controlla la connessione o l'URL del backend.");
     }
 }
 
@@ -177,20 +176,24 @@ function addMat() {
     const div = document.createElement('div');
     div.className = 'mat-item';
     div.innerHTML = `
-        <div class="mat-header"><div class="mat-num">${matCount}</div><input type="text" class="m-desc" placeholder="Descrizione materiale..." style="border:none; background:none; font-weight:600; flex:1; outline:none"></div>
-        <div class="mat-body" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div><label>Quantità</label><input type="number" class="m-qty" value="1"></div>
-            <div><label>Unità</label><select class="m-unit"><option>pz</option><option>kg</option><option>m</option><option>m³</option><option>lt</option></select></div>
+        <div class="mat-header"><div class="mat-num">${matCount}</div><input type="text" class="m-desc" placeholder="Cosa serve?" style="border:none; background:none; font-weight:600; flex:1; outline:none"></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px;">
+            <div><label style="font-size:10px; font-weight:700; color:#999; text-transform:uppercase;">Quantità</label><input type="number" class="m-qty" value="1" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px;"></div>
+            <div><label style="font-size:10px; font-weight:700; color:#999; text-transform:uppercase;">Unità</label><select class="m-unit" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px;"><option>pz</option><option>kg</option><option>m</option><option>m³</option><option>lt</option></select></div>
         </div>`;
     document.getElementById('matList').appendChild(div);
 }
 
 function goNext() {
     if (currentStep === 1) {
-        if (!document.getElementById('cantiere').value || !document.getElementById('dataConsegna').value) return alert("Compila i campi obbligatori!");
+        if (!document.getElementById('richiedente').value || !document.getElementById('cantiere').value || !document.getElementById('dataConsegna').value) {
+            return alert("Tutti i campi contrassegnati con * sono obbligatori!");
+        }
         setStep(2);
         if (matCount === 0) addMat();
     } else if (currentStep === 2) {
+        const hasMats = Array.from(document.querySelectorAll('.m-desc')).some(i => i.value.trim() !== "");
+        if(!hasMats) return alert("Aggiungi almeno un materiale!");
         setStep(3);
         renderRiepilogo();
     } else if (currentStep === 3) {
@@ -210,28 +213,35 @@ function setStep(n) {
 }
 
 function renderRiepilogo() {
+    const r = document.getElementById('richiedente').value;
     const c = document.getElementById('cantiere').value;
+    const f = document.getElementById('fornitore').value || "Da definire";
     const d = document.getElementById('dataConsegna').value;
-    const mats = document.querySelectorAll('.mat-item').length;
+    const mats = Array.from(document.querySelectorAll('.mat-item')).filter(it => it.querySelector('.m-desc').value.trim() !== "").length;
+    
     document.getElementById('riepilogoBox').innerHTML = `
+        <strong>Richiedente:</strong> ${r}<br>
         <strong>Cantiere:</strong> ${c}<br>
-        <strong>Consegna richiesta:</strong> ${d}<br>
-        <strong>Materiali in lista:</strong> ${mats} articoli`;
+        <strong>Fornitore:</strong> ${f}<br>
+        <strong>Consegna:</strong> ${d}<br>
+        <strong>Materiali:</strong> ${mats} voci in lista`;
 }
 
 async function inviaDati() {
     const firma = document.getElementById('firma').value.trim();
-    if (!firma) return alert("Inserisci la firma per procedere!");
+    if (!firma) return alert("Inserisci il tuo nome per firmare la richiesta!");
 
     const btn = document.getElementById('btnNext');
     btn.disabled = true;
-    btn.innerHTML = '<div class="spinner"></div> Invio e Generazione PDF...';
+    btn.innerHTML = '<div class="spinner"></div> Elaborazione...';
 
-    const materiali = Array.from(document.querySelectorAll('.mat-item')).map(item => ({
-        descrizione: item.querySelector('.m-desc').value || "Senza descrizione",
-        quantita: item.querySelector('.m-qty').value,
-        unita: item.querySelector('.m-unit').value
-    }));
+    const materiali = Array.from(document.querySelectorAll('.mat-item'))
+        .filter(item => item.querySelector('.m-desc').value.trim() !== "")
+        .map(item => ({
+            descrizione: item.querySelector('.m-desc').value,
+            quantita: item.querySelector('.m-qty').value,
+            unita: item.querySelector('.m-unit').value
+        }));
 
     const payload = {
         richiedente: document.getElementById('richiedente').value,
@@ -254,12 +264,14 @@ async function inviaDati() {
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('footer').classList.add('hidden');
             document.getElementById('successScreen').classList.remove('hidden');
-            document.getElementById('successRda').textContent = "Codice assegnato: " + result.rda;
+            document.getElementById('successRda').textContent = result.rda;
+        } else {
+            throw new Error(result.error);
         }
     } catch (e) {
-        alert("Errore nell'invio. Verifica che il backend sia pubblicato correttamente.");
+        alert("Errore: " + e.message);
         btn.disabled = false;
-        btn.textContent = "Riprova Inviata";
+        btn.textContent = "Riprova";
     }
 }
 
