@@ -28,8 +28,7 @@
   video, #camCanvas, #freezeCanvas{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
   }
-  video{ transform:scaleX(-1); } /* selfie mirror per orientarsi meglio */
-  #camCanvas{ transform:scaleX(-1); pointer-events:none; }
+  #camCanvas{ pointer-events:none; }
   #freezeCanvas{ display:none; pointer-events:auto; }
 
   #hud{
@@ -324,7 +323,9 @@ const btnGhost = document.getElementById('btnGhost');
 const LEFT_WRIST = 15, RIGHT_WRIST = 16;
 
 let poseLandmarker = null;
-let state = 'idle'; // idle | countdown | pick-points | set-idle | set-active | done
+let state = 'init'; // init | idle | countdown | pick-points | set-idle | set-active | done
+let cameraReady = false;
+let poseReady = false;
 let pxToCm = null;
 let calibPoints = [];
 let counter = null;
@@ -349,26 +350,48 @@ async function initPose() {
   const filesetResolver = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
   );
-  poseLandmarker = await PoseLandmarker.createFromOptions(filesetResolver, {
-    baseOptions: {
-      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
-      delegate: "GPU"
-    },
-    runningMode: "VIDEO",
-    numPoses: 1
-  });
+  const modelAssetPath = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+  try {
+    poseLandmarker = await PoseLandmarker.createFromOptions(filesetResolver, {
+      baseOptions: { modelAssetPath, delegate: "GPU" },
+      runningMode: "VIDEO", numPoses: 1
+    });
+  } catch (e) {
+    // alcuni telefoni non supportano il delegate GPU via WebGL: fallback su CPU
+    poseLandmarker = await PoseLandmarker.createFromOptions(filesetResolver, {
+      baseOptions: { modelAssetPath, delegate: "CPU" },
+      runningMode: "VIDEO", numPoses: 1
+    });
+  }
+  poseReady = true;
 }
 
 async function initCamera() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-    audio: false
-  });
+  if (!window.isSecureContext) {
+    throw new Error('La pagina non è su HTTPS/localhost: il browser nega l\'accesso alla fotocamera per policy di sicurezza.');
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    throw new Error('getUserMedia non disponibile in questo browser/contesto.');
+  }
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+  } catch (e) {
+    // fallback: nessuna fotocamera posteriore disponibile (es. laptop) o constraint troppo stretto
+    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+  }
   video.srcObject = stream;
-  await new Promise(res => { video.onloadedmetadata = () => res(); });
-  video.play();
+  await new Promise((res, rej) => {
+    video.onloadedmetadata = () => res();
+    setTimeout(() => rej(new Error('Timeout attivazione video.')), 8000);
+  });
+  await video.play();
   camCanvas.width = freezeCanvas.width = video.videoWidth;
   camCanvas.height = freezeCanvas.height = video.videoHeight;
+  cameraReady = true;
 }
 
 function drawWrists(ctx, sx, dx, w, h) {
@@ -431,9 +454,32 @@ btnMain.addEventListener('click', onMainButton);
 btnGhost.addEventListener('click', openSettings);
 
 function onMainButton() {
-  if (state === 'idle') startCountdown();
+  if (state === 'init') startCameraFlow();
+  else if (state === 'idle') startCountdown();
   else if (state === 'set-idle') openWeightModal();
   else if (state === 'set-active') closeSet();
+}
+
+async function startCameraFlow() {
+  btnMain.disabled = true;
+  msgLine.style.color = 'var(--warn)';
+  msgLine.textContent = 'Attivazione fotocamera e modello…';
+  try {
+    // il tap è il "gesto utente" richiesto dai browser mobili per concedere
+    // l'accesso alla fotocamera: per questo l'attivazione NON parte da sola
+    // al caricamento della pagina, ma solo qui.
+    await Promise.all([initCamera(), poseReady ? Promise.resolve() : initPose()]);
+    msgLine.textContent = '';
+    state = 'idle';
+    btnMain.disabled = false;
+    btnMain.textContent = 'Calibra';
+    loop();
+  } catch (err) {
+    btnMain.disabled = false;
+    btnMain.textContent = 'Riprova';
+    msgLine.style.color = 'var(--bad)';
+    msgLine.textContent = 'Errore: ' + err.message;
+  }
 }
 
 function startCountdown() {
@@ -454,11 +500,7 @@ function startCountdown() {
 }
 
 function freezeFrame() {
-  freezeCtx.save();
-  freezeCtx.translate(freezeCanvas.width, 0);
-  freezeCtx.scale(-1, 1); // stesso mirroring del video a video
   freezeCtx.drawImage(video, 0, 0, freezeCanvas.width, freezeCanvas.height);
-  freezeCtx.restore();
   freezeCanvas.style.display = 'block';
   msgLine.textContent = 'Tocca due punti: es. gomito e polso, o i due bordi di un disco';
   msgLine.style.color = 'var(--warn)';
@@ -637,17 +679,10 @@ window.newWorkout = function () {
 
 /* ---------------- avvio ---------------- */
 
-(async function boot() {
-  msgLine.textContent = 'Caricamento modello e fotocamera…';
-  try {
-    await Promise.all([initPose(), initCamera()]);
-    msgLine.textContent = '';
-    loop();
-  } catch (err) {
-    msgLine.style.color = 'var(--bad)';
-    msgLine.textContent = 'Errore: ' + err.message + ' (serve HTTPS per la fotocamera)';
-  }
-})();
+// Al caricamento pre-scarichiamo SOLO il modello (non serve un gesto utente
+// per questo, è solo un fetch). La fotocamera resta a un tap esplicito.
+btnMain.textContent = 'Avvia fotocamera';
+initPose().catch(() => {}); // se fallisce qui, verrà ritentato in startCameraFlow
 </script>
 </body>
 </html>
