@@ -1,1 +1,653 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>VBT Tracker — Panca</title>
+<style>
+  :root{
+    --bg:#0a0d0f;
+    --ink:#eef2f0;
+    --dim:#7c8a86;
+    --line:#1e2624;
+    --go:#4ade80;
+    --warn:#facc15;
+    --bad:#f87171;
+    --accent:#38bdf8;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; height:100%; overflow:hidden;
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Mono",Roboto,monospace;
+    user-select:none;
+  }
+  #app{position:fixed; inset:0; display:flex; flex-direction:column;}
 
+  #stage{position:relative; flex:1; overflow:hidden; background:#000;}
+  video, #camCanvas, #freezeCanvas{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  }
+  video{ transform:scaleX(-1); } /* selfie mirror per orientarsi meglio */
+  #camCanvas{ transform:scaleX(-1); pointer-events:none; }
+  #freezeCanvas{ display:none; pointer-events:auto; }
+
+  #hud{
+    position:absolute; top:0; left:0; right:0;
+    padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    pointer-events:none; z-index:5;
+  }
+  #hud .badge{
+    background:rgba(10,13,15,.72); border:1px solid var(--line);
+    border-radius:10px; padding:6px 10px; font-size:12px; color:var(--dim);
+    backdrop-filter:blur(6px);
+  }
+  #repsBig{
+    position:absolute; top:calc(50% - 10vh); left:0; right:0;
+    text-align:center; pointer-events:none; z-index:5;
+  }
+  #repsBig .n{ font-size:22vw; font-weight:800; line-height:1; color:var(--go); text-shadow:0 2px 12px rgba(0,0,0,.6); }
+  #repsBig .label{ font-size:12px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase; }
+  #velLine{
+    position:absolute; bottom:120px; left:0; right:0; text-align:center;
+    font-size:15px; color:var(--accent); pointer-events:none; z-index:5;
+    text-shadow:0 2px 8px rgba(0,0,0,.7);
+  }
+  #debugLine{
+    position:absolute; bottom:96px; left:0; right:0; text-align:center;
+    font-size:11px; color:var(--dim); pointer-events:none; z-index:5;
+  }
+  #msgLine{
+    position:absolute; top:44%; left:12px; right:12px; text-align:center;
+    font-size:15px; color:var(--warn); pointer-events:none; z-index:5;
+    text-shadow:0 2px 8px rgba(0,0,0,.8);
+  }
+
+  #controls{
+    padding:14px 14px calc(14px + env(safe-area-inset-bottom));
+    display:flex; gap:10px; background:#0a0d0fee; border-top:1px solid var(--line);
+    z-index:6;
+  }
+  button{
+    flex:1; border:none; border-radius:14px; padding:16px 10px;
+    font-size:15px; font-weight:600; font-family:inherit;
+    background:var(--line); color:var(--ink);
+  }
+  button.primary{ background:var(--go); color:#06210f; }
+  button.stop{ background:var(--bad); color:#2a0a0a; }
+  button.ghost{ background:transparent; border:1px solid var(--line); color:var(--dim); flex:0 0 auto; padding:16px; }
+  button:disabled{ opacity:.35; }
+  button:active{ filter:brightness(0.85); }
+
+  /* modal generico */
+  .modal{
+    position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(4px);
+    display:flex; align-items:flex-end; justify-content:center; z-index:20;
+  }
+  .sheet{
+    width:100%; max-width:480px; background:#12181a; border:1px solid var(--line);
+    border-radius:20px 20px 0 0; padding:22px 20px calc(22px + env(safe-area-inset-bottom));
+  }
+  .sheet h3{ margin:0 0 4px; font-size:17px; }
+  .sheet p{ margin:0 0 16px; font-size:13px; color:var(--dim); line-height:1.5; }
+  .sheet input[type=number]{
+    width:100%; background:#0a0d0f; border:1px solid var(--line); color:var(--ink);
+    font-size:22px; padding:14px; border-radius:12px; margin-bottom:14px; font-family:inherit;
+  }
+  .row{ display:flex; gap:10px; }
+  .settingsGrid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px;}
+  .settingsGrid label{ font-size:10px; color:var(--dim); display:block; margin-bottom:4px;}
+  .settingsGrid input{ width:100%; background:#0a0d0f; border:1px solid var(--line); color:var(--ink);
+    font-size:14px; padding:8px; border-radius:8px; font-family:inherit; }
+
+  #summaryOverlay{
+    position:fixed; inset:0; background:var(--bg); z-index:30; overflow-y:auto;
+    padding:calc(20px + env(safe-area-inset-top)) 18px calc(20px + env(safe-area-inset-bottom));
+    display:none;
+  }
+  #summaryOverlay h2{ margin:0 0 4px; }
+  #summaryOverlay .tot{ color:var(--dim); font-size:13px; margin-bottom:18px; }
+  .setRow{
+    border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .setRow .l{ font-size:13px; color:var(--dim); }
+  .setRow .r{ font-size:15px; font-weight:600; }
+  #summaryOverlay .actions{ display:flex; gap:10px; margin-top:20px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="camCanvas"></canvas>
+    <canvas id="freezeCanvas"></canvas>
+
+    <div id="hud">
+      <span class="badge" id="hudLeft">Panca piana — non calibrato</span>
+      <span class="badge" id="hudRight">—</span>
+    </div>
+
+    <div id="repsBig" style="display:none;">
+      <div class="n" id="repsCount">0</div>
+      <div class="label">reps</div>
+    </div>
+    <div id="velLine"></div>
+    <div id="debugLine"></div>
+    <div id="msgLine"></div>
+  </div>
+
+  <div id="controls">
+    <button id="btnGhost" class="ghost">⚙︎</button>
+    <button id="btnMain" class="primary">Calibra</button>
+  </div>
+</div>
+
+<!-- modal impostazioni -->
+<div class="modal" id="modalSettings" style="display:none;">
+  <div class="sheet">
+    <h3>Impostazioni</h3>
+    <p>Come nella versione desktop: primi parametri da aggiustare se il conteggio sballa.</p>
+    <div class="settingsGrid">
+      <div><label>Ampiezza min (cm)</label><input type="number" id="setAmp" value="22"></div>
+      <div><label>Margine lockout (cm)</label><input type="number" id="setTop" value="4"></div>
+      <div><label>Tolleranza presa (cm)</label><input type="number" id="setGrip" value="8"></div>
+    </div>
+    <button class="primary" style="width:100%" onclick="closeSettings()">Fatto</button>
+  </div>
+</div>
+
+<!-- modal peso -->
+<div class="modal" id="modalWeight" style="display:none;">
+  <div class="sheet">
+    <h3 id="weightTitle">Peso serie</h3>
+    <p>Inserisci il peso sul bilanciere in kg.</p>
+    <input type="number" id="weightInput" inputmode="decimal" placeholder="es. 80">
+    <div class="row">
+      <button class="ghost" style="flex:1" onclick="cancelWeight()">Annulla</button>
+      <button class="primary" style="flex:1" onclick="confirmWeight()">Inizia serie</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal cm calibrazione -->
+<div class="modal" id="modalCm" style="display:none;">
+  <div class="sheet">
+    <h3>Distanza reale</h3>
+    <p>Quanti cm separano i due punti che hai toccato? (es. gomito→polso, oppure il diametro del disco)</p>
+    <input type="number" id="cmInput" inputmode="decimal" placeholder="es. 45">
+    <div class="row">
+      <button class="ghost" style="flex:1" onclick="restartCalibration()">Rifai</button>
+      <button class="primary" style="flex:1" onclick="confirmCm()">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- riepilogo finale -->
+<div id="summaryOverlay">
+  <h2>Riepilogo allenamento</h2>
+  <div class="tot" id="summaryTotals"></div>
+  <div id="summaryList"></div>
+  <div class="actions">
+    <button class="ghost" style="flex:1" onclick="downloadCsv()">Scarica CSV</button>
+    <button class="primary" style="flex:1" onclick="newWorkout()">Nuovo allenamento</button>
+  </div>
+</div>
+
+<script type="module">
+import { PoseLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+
+/* =========================================================================
+   REP COUNTER — porting 1:1 della logica a isteresi della versione Python.
+   Vedi commenti nello script originale per la spiegazione dell'algoritmo:
+   l'estremo corrente (extremeH) si aggiorna in continuo finché il movimento
+   prosegue nella stessa direzione; una vera inversione richiede che ci si
+   allontani da QUELL'estremo di almeno minAmplitudeCm. La fase di salita si
+   chiude anche subito, appena si torna vicino al lockout registrato a inizio
+   serie, senza aspettare l'inversione successiva.
+   ========================================================================= */
+class RepCounter {
+  constructor(pxToCm, minAmplitudeCm, topMarginCm) {
+    this.pxToCm = pxToCm;
+    this.minAmplitudeCm = minAmplitudeCm;
+    this.topMarginCm = topMarginCm;
+    this.smoothBuf = [];
+    this.smoothWindow = 7;
+    this.lastT = null;
+    this.lastH = null;
+    this.direction = null;
+    this.extremeH = null;
+    this.extremeT = null;
+    this.topRef = null;
+    this.phaseLockedEarly = false;
+    this.phaseVelocities = [];
+    this.phasesDone = [];
+    this.completedReps = [];
+    this.reps = 0;
+    this.lastV = 0;
+  }
+  heightCm(yPx) { return -yPx / this.pxToCm; }
+
+  update(yPx, t) { // t in secondi
+    const hRaw = this.heightCm(yPx);
+    this.smoothBuf.push(hRaw);
+    if (this.smoothBuf.length > this.smoothWindow) this.smoothBuf.shift();
+    const h = this.smoothBuf.reduce((a, b) => a + b, 0) / this.smoothBuf.length;
+
+    if (this.lastT === null) {
+      this.lastT = t; this.lastH = h; this.extremeH = h; this.extremeT = t; this.topRef = h;
+      return 0;
+    }
+    const dt = t - this.lastT;
+    if (dt <= 0) return this.lastV;
+
+    const v = (h - this.lastH) / dt;
+    this.lastH = h; this.lastT = t; this.lastV = v;
+    const curDir = v > 0 ? "up" : "down";
+
+    if (this.direction === null) { this.direction = curDir; this.extremeH = h; this.extremeT = t; }
+
+    if (curDir === this.direction) {
+      if (this.direction === "up") { if (h > this.extremeH) { this.extremeH = h; this.extremeT = t; } }
+      else { if (h < this.extremeH) { this.extremeH = h; this.extremeT = t; } }
+      this.phaseVelocities.push(Math.abs(v));
+
+      if (this.direction === "up" && !this.phaseLockedEarly && this.topRef !== null
+          && h >= this.topRef - this.topMarginCm) {
+        this.chiudiFase(t);
+        this.phaseLockedEarly = true;
+      }
+    } else {
+      const amplitude = Math.abs(h - this.extremeH);
+      if (amplitude >= this.minAmplitudeCm) {
+        if (!(this.direction === "up" && this.phaseLockedEarly)) this.chiudiFase(t);
+        else this.topRef = Math.max(this.topRef, this.extremeH);
+        this.direction = curDir; this.extremeH = h; this.extremeT = t;
+        this.phaseVelocities = [Math.abs(v)];
+        this.phaseLockedEarly = false;
+      } else {
+        this.phaseVelocities.push(Math.abs(v));
+      }
+    }
+    return v;
+  }
+
+  chiudiFase(t) {
+    if (this.phaseVelocities.length === 0) return;
+    const meanV = this.phaseVelocities.reduce((a, b) => a + b, 0) / this.phaseVelocities.length;
+    const peakV = Math.max(...this.phaseVelocities);
+    const fase = { tipo: this.direction, vMediaCmS: meanV, vPiccoCmS: peakV, durataS: t - this.extremeT };
+    this.phasesDone.push(fase);
+    if (this.phasesDone.length % 2 === 0) {
+      const ultimeDue = this.phasesDone.slice(-2);
+      const ecc = ultimeDue.find(p => p.tipo === "down") || null;
+      const con = ultimeDue.find(p => p.tipo === "up") || null;
+      this.reps += 1;
+      this.completedReps.push({ rep: this.reps, eccentrica: ecc, concentrica: con });
+    }
+  }
+
+  // richiamato quando la presa non è più valida (mani non vincolate al
+  // bilanciere): riancora lo stato sulla posizione attuale senza inventare
+  // velocità dal salto, senza toccare reps già contate.
+  resincronizza(yPx, t) {
+    const hRaw = this.heightCm(yPx);
+    this.smoothBuf = [hRaw];
+    this.lastT = t; this.lastH = hRaw;
+    this.direction = null; this.extremeH = hRaw; this.extremeT = t;
+    this.phaseVelocities = []; this.phaseLockedEarly = false; this.lastV = 0;
+  }
+
+  ampiezzaCorrente(hUltimo) { return this.extremeH === null ? 0 : Math.abs(hUltimo - this.extremeH); }
+  distanzaDaLockout(hUltimo) { return this.topRef === null ? null : this.topRef - hUltimo; }
+}
+
+/* ========================================================================= */
+
+const video = document.getElementById('video');
+const camCanvas = document.getElementById('camCanvas');
+const camCtx = camCanvas.getContext('2d');
+const freezeCanvas = document.getElementById('freezeCanvas');
+const freezeCtx = freezeCanvas.getContext('2d');
+
+const hudLeft = document.getElementById('hudLeft');
+const hudRight = document.getElementById('hudRight');
+const repsBig = document.getElementById('repsBig');
+const repsCount = document.getElementById('repsCount');
+const velLine = document.getElementById('velLine');
+const debugLine = document.getElementById('debugLine');
+const msgLine = document.getElementById('msgLine');
+const btnMain = document.getElementById('btnMain');
+const btnGhost = document.getElementById('btnGhost');
+
+const LEFT_WRIST = 15, RIGHT_WRIST = 16;
+
+let poseLandmarker = null;
+let state = 'idle'; // idle | countdown | pick-points | set-idle | set-active | done
+let pxToCm = null;
+let calibPoints = [];
+let counter = null;
+let sessione = [];
+let numeroSerie = 0;
+let pesoCorrente = 0;
+let gripRefPx = null;
+let lastLandmarks = null;
+
+function heightPxFromLandmarks(lm, w, h) {
+  const sx = lm[LEFT_WRIST], dx = lm[RIGHT_WRIST];
+  const visMin = Math.min(sx.visibility ?? 1, dx.visibility ?? 1);
+  if (visMin < 0.4) return null;
+  const yMed = (sx.y + dx.y) / 2 * h;
+  const dxPx = (sx.x - dx.x) * w;
+  const dyPx = (sx.y - dx.y) * h;
+  const distanzaPolsi = Math.sqrt(dxPx * dxPx + dyPx * dyPx);
+  return { yMed, distanzaPolsi, visMin, sx, dx };
+}
+
+async function initPose() {
+  const filesetResolver = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+  );
+  poseLandmarker = await PoseLandmarker.createFromOptions(filesetResolver, {
+    baseOptions: {
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+      delegate: "GPU"
+    },
+    runningMode: "VIDEO",
+    numPoses: 1
+  });
+}
+
+async function initCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+    audio: false
+  });
+  video.srcObject = stream;
+  await new Promise(res => { video.onloadedmetadata = () => res(); });
+  video.play();
+  camCanvas.width = freezeCanvas.width = video.videoWidth;
+  camCanvas.height = freezeCanvas.height = video.videoHeight;
+}
+
+function drawWrists(ctx, sx, dx, w, h) {
+  ctx.fillStyle = '#f87171';
+  ctx.beginPath(); ctx.arc(sx.x * w, sx.y * h, 8, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(dx.x * w, dx.y * h, 8, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(sx.x * w, sx.y * h); ctx.lineTo(dx.x * w, dx.y * h); ctx.stroke();
+}
+
+function loop() {
+  requestAnimationFrame(loop);
+  if (!poseLandmarker || video.readyState < 2) return;
+  if (state === 'countdown' || state === 'pick-points') return; // usiamo il frame congelato
+
+  const w = camCanvas.width, h = camCanvas.height;
+  camCtx.clearRect(0, 0, w, h);
+
+  const result = poseLandmarker.detectForVideo(video, performance.now());
+  if (!result.landmarks || result.landmarks.length === 0) {
+    lastLandmarks = null;
+    if (state === 'set-active') msgLine.textContent = 'Corpo non rilevato — resta nell\'inquadratura';
+    return;
+  }
+  const lm = result.landmarks[0];
+  lastLandmarks = lm;
+  const info = heightPxFromLandmarks(lm, w, h);
+
+  if (state === 'set-active') {
+    msgLine.textContent = '';
+    if (info) {
+      drawWrists(camCtx, info.sx, info.dx, w, h);
+      const tolPx = Number(document.getElementById('setGrip').value) * pxToCm;
+      if (gripRefPx === null) gripRefPx = info.distanzaPolsi;
+
+      if (Math.abs(info.distanzaPolsi - gripRefPx) > tolPx) {
+        // presa non valida: probabilmente mani staccate dal bilanciere
+        counter.resincronizza(info.yMed, performance.now() / 1000);
+      } else {
+        const v = counter.update(info.yMed, performance.now() / 1000);
+        repsCount.textContent = counter.reps;
+        velLine.textContent = `${(v / 100).toFixed(2)} m/s`;
+        const hUltimo = counter.lastH;
+        const amp = counter.ampiezzaCorrente(hUltimo);
+        const distLock = counter.distanzaDaLockout(hUltimo);
+        debugLine.textContent =
+          `ampiezza ${amp.toFixed(0)}/${document.getElementById('setAmp').value}cm` +
+          (distLock !== null ? ` · lockout ${distLock.toFixed(0)}/${document.getElementById('setTop').value}cm` : '') +
+          ` · vis ${info.visMin.toFixed(2)}`;
+      }
+    } else {
+      msgLine.textContent = 'Polsi poco visibili — controlla inquadratura';
+    }
+  }
+}
+
+/* ---------------- calibrazione ---------------- */
+
+btnMain.addEventListener('click', onMainButton);
+btnGhost.addEventListener('click', openSettings);
+
+function onMainButton() {
+  if (state === 'idle') startCountdown();
+  else if (state === 'set-idle') openWeightModal();
+  else if (state === 'set-active') closeSet();
+}
+
+function startCountdown() {
+  state = 'countdown';
+  btnMain.disabled = true;
+  let secondi = 8;
+  msgLine.style.color = 'var(--warn)';
+  const tick = () => {
+    msgLine.textContent = `Preparati sulla panca: ${secondi}s`;
+    if (secondi <= 0) {
+      freezeFrame();
+      return;
+    }
+    secondi -= 1;
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+function freezeFrame() {
+  freezeCtx.save();
+  freezeCtx.translate(freezeCanvas.width, 0);
+  freezeCtx.scale(-1, 1); // stesso mirroring del video a video
+  freezeCtx.drawImage(video, 0, 0, freezeCanvas.width, freezeCanvas.height);
+  freezeCtx.restore();
+  freezeCanvas.style.display = 'block';
+  msgLine.textContent = 'Tocca due punti: es. gomito e polso, o i due bordi di un disco';
+  msgLine.style.color = 'var(--warn)';
+  calibPoints = [];
+  state = 'pick-points';
+  freezeCanvas.addEventListener('click', onFreezeClick);
+}
+
+function onFreezeClick(e) {
+  if (calibPoints.length >= 2) return;
+  const rect = freezeCanvas.getBoundingClientRect();
+  const scaleX = freezeCanvas.width / rect.width;
+  const scaleY = freezeCanvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  calibPoints.push({ x, y });
+
+  freezeCtx.fillStyle = '#4ade80';
+  freezeCtx.beginPath(); freezeCtx.arc(x, y, 10, 0, 7); freezeCtx.fill();
+
+  if (calibPoints.length === 2) {
+    freezeCtx.strokeStyle = '#4ade80'; freezeCtx.lineWidth = 3;
+    freezeCtx.beginPath();
+    freezeCtx.moveTo(calibPoints[0].x, calibPoints[0].y);
+    freezeCtx.lineTo(calibPoints[1].x, calibPoints[1].y);
+    freezeCtx.stroke();
+    freezeCanvas.removeEventListener('click', onFreezeClick);
+    document.getElementById('modalCm').style.display = 'flex';
+  }
+}
+
+window.restartCalibration = function () {
+  document.getElementById('modalCm').style.display = 'none';
+  freezeCanvas.style.display = 'none';
+  state = 'idle';
+  btnMain.disabled = false;
+  btnMain.textContent = 'Calibra';
+  startCountdown();
+};
+
+window.confirmCm = function () {
+  const cm = parseFloat(document.getElementById('cmInput').value.replace(',', '.'));
+  if (!cm || cm <= 0) { alert('Inserisci una distanza valida.'); return; }
+  const dx = calibPoints[1].x - calibPoints[0].x;
+  const dy = calibPoints[1].y - calibPoints[0].y;
+  const distPx = Math.sqrt(dx * dx + dy * dy);
+  pxToCm = distPx / cm;
+
+  document.getElementById('modalCm').style.display = 'none';
+  freezeCanvas.style.display = 'none';
+  document.getElementById('cmInput').value = '';
+  hudLeft.textContent = `Panca piana — calibrato (${pxToCm.toFixed(1)} px/cm)`;
+  msgLine.textContent = '';
+  state = 'set-idle';
+  btnMain.disabled = false;
+  btnMain.textContent = 'Inizia serie';
+  repsBig.style.display = 'block';
+  repsCount.textContent = '0';
+};
+
+/* ---------------- gestione serie ---------------- */
+
+function openWeightModal() {
+  numeroSerie += 1;
+  document.getElementById('weightTitle').textContent = `Peso serie #${numeroSerie}`;
+  document.getElementById('modalWeight').style.display = 'flex';
+}
+
+window.cancelWeight = function () {
+  numeroSerie -= 1;
+  document.getElementById('modalWeight').style.display = 'none';
+};
+
+window.confirmWeight = function () {
+  const w = parseFloat(document.getElementById('weightInput').value.replace(',', '.'));
+  pesoCorrente = isNaN(w) ? 0 : w;
+  document.getElementById('weightInput').value = '';
+  document.getElementById('modalWeight').style.display = 'none';
+
+  const minAmp = Number(document.getElementById('setAmp').value);
+  const topMargin = Number(document.getElementById('setTop').value);
+  counter = new RepCounter(pxToCm, minAmp, topMargin);
+  gripRefPx = null;
+
+  state = 'set-active';
+  btnMain.textContent = 'Chiudi serie';
+  btnMain.className = 'stop';
+  hudRight.textContent = `Serie #${numeroSerie} · ${pesoCorrente}kg`;
+  repsCount.textContent = '0';
+  velLine.textContent = '';
+  debugLine.textContent = '';
+};
+
+function closeSet() {
+  sessione.push({
+    numeroSerie, reps: counter.reps, pesoKg: pesoCorrente,
+    repDetails: counter.completedReps, timestamp: new Date().toISOString()
+  });
+  state = 'set-idle';
+  btnMain.textContent = 'Inizia serie';
+  btnMain.className = 'primary';
+  hudRight.textContent = `Ultima: ${counter.reps} reps @ ${pesoCorrente}kg`;
+  velLine.textContent = ''; debugLine.textContent = '';
+
+  // long-press style: dopo la prima serie mostriamo anche il tasto per finire
+  showFinishButton();
+}
+
+let finishBtnAdded = false;
+function showFinishButton() {
+  if (finishBtnAdded) return;
+  finishBtnAdded = true;
+  const b = document.createElement('button');
+  b.className = 'ghost'; b.textContent = 'Fine'; b.style.flex = '0 0 auto';
+  b.onclick = showSummary;
+  document.getElementById('controls').appendChild(b);
+}
+
+/* ---------------- impostazioni ---------------- */
+
+window.openSettings = function () { document.getElementById('modalSettings').style.display = 'flex'; };
+window.closeSettings = function () { document.getElementById('modalSettings').style.display = 'none'; };
+
+/* ---------------- riepilogo ---------------- */
+
+function riepilogoSerie(s) {
+  const tonnellaggio = s.reps * s.pesoKg;
+  const vConc = s.repDetails.filter(r => r.concentrica).map(r => r.concentrica.vMediaCmS / 100);
+  const vMedia = vConc.length ? vConc.reduce((a, b) => a + b, 0) / vConc.length : 0;
+  return { ...s, tonnellaggioKg: tonnellaggio, vMediaConcentricaMS: vMedia };
+}
+
+function showSummary() {
+  document.getElementById('summaryOverlay').style.display = 'block';
+  const list = document.getElementById('summaryList');
+  list.innerHTML = '';
+  let volumeTot = 0, tonTot = 0;
+  sessione.forEach(s => {
+    const r = riepilogoSerie(s);
+    volumeTot += r.reps; tonTot += r.tonnellaggioKg;
+    const row = document.createElement('div');
+    row.className = 'setRow';
+    row.innerHTML = `<div class="l">Serie #${r.numeroSerie} · ${r.pesoKg}kg</div>
+      <div class="r">${r.reps} reps · ${r.vMediaConcentricaMS.toFixed(2)} m/s</div>`;
+    list.appendChild(row);
+  });
+  document.getElementById('summaryTotals').textContent =
+    `Volume totale: ${volumeTot} reps · Tonnellaggio: ${tonTot.toFixed(1)} kg`;
+}
+
+window.downloadCsv = function () {
+  let csv = 'numero_serie,reps,peso_kg,tonnellaggio_kg,v_media_concentrica_m_s,timestamp\n';
+  sessione.forEach(s => {
+    const r = riepilogoSerie(s);
+    csv += `${r.numeroSerie},${r.reps},${r.pesoKg},${r.tonnellaggioKg.toFixed(1)},${r.vMediaConcentricaMS.toFixed(2)},${r.timestamp}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `workout_log_panca_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'')}.csv`;
+  a.click();
+};
+
+window.newWorkout = function () {
+  sessione = []; numeroSerie = 0; pxToCm = null; finishBtnAdded = false;
+  document.getElementById('summaryOverlay').style.display = 'none';
+  const extra = document.getElementById('controls').querySelector('.ghost:last-child');
+  if (extra && extra.textContent === 'Fine') extra.remove();
+  state = 'idle';
+  btnMain.textContent = 'Calibra';
+  btnMain.className = 'primary';
+  hudLeft.textContent = 'Panca piana — non calibrato';
+  hudRight.textContent = '—';
+  repsBig.style.display = 'none';
+};
+
+/* ---------------- avvio ---------------- */
+
+(async function boot() {
+  msgLine.textContent = 'Caricamento modello e fotocamera…';
+  try {
+    await Promise.all([initPose(), initCamera()]);
+    msgLine.textContent = '';
+    loop();
+  } catch (err) {
+    msgLine.style.color = 'var(--bad)';
+    msgLine.textContent = 'Errore: ' + err.message + ' (serve HTTPS per la fotocamera)';
+  }
+})();
+</script>
+</body>
+</html>
